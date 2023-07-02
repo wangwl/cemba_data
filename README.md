@@ -10,6 +10,12 @@
    //    //      //    //
 </pre>
 
+# Install
+To install this latest version:
+```shell
+pip install git+https://github.com/DingWB/cemba_data
+```
+
 # YAP (Yet Another Pipeline)
 Pipeline(s) for mapping and cluster-level aggregation of single nucleus methylome and multi-omic datasets.
 Technologies supported:
