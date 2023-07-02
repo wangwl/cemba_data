@@ -111,8 +111,8 @@ def write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_di
     with open(script_path, 'w') as f:
         try:
             uid_order = pd.read_csv(
-                output_dir / 'stats/UIDTotalCellInputReadPairs.csv', index_col=0, squeeze=True, header=None
-            ).sort_values(ascending=False)
+                output_dir / 'stats/UIDTotalCellInputReadPairs.csv', index_col=0,header=None
+            ).squeeze().sort_values(ascending=False)
             for uid in uid_order.index:
                 if uid in cmds:
                     f.write(cmds.pop(uid) + '\n')
@@ -148,8 +148,8 @@ def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, q
     with open(script_path, 'w') as f:
         try:
             uid_order = pd.read_csv(
-                output_dir / 'stats/UIDTotalCellInputReadPairs.csv', index_col=0, squeeze=True, header=None
-            ).sort_values(ascending=False)
+                output_dir / 'stats/UIDTotalCellInputReadPairs.csv', index_col=0,header=None
+            ).squeeze().sort_values(ascending=False)
             for uid in uid_order.index:
                 if uid in cmds:
                     f.write(cmds.pop(uid) + '\n')
