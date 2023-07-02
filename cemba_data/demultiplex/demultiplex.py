@@ -398,7 +398,10 @@ def _reformat_v2_single(output_dir):
     for path in fastq_paths:
         plate, cur_group, pcr_index, random_index, suffix = path.name.split(
             '-')
-        col = int(random_index[1:])
+        try:
+            col = int(random_index[1:])
+        except:
+            continue
         real_group = ((col - 1) % 12) // 2 + 1
         new_path = str(path).replace(f'{plate}-{cur_group}-{pcr_index}',
                                      f'{plate}-{real_group}-{pcr_index}')
