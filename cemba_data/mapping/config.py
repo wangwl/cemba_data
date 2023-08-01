@@ -26,26 +26,26 @@ def print_default_mapping_config(mode,
         raise ValueError(f'Unknown mode {barcode_version}')
 
     if bismark_ref is not None:
-        bismark_ref = pathlib.Path(bismark_ref).absolute()
+        bismark_ref = bismark_ref #pathlib.Path(bismark_ref).absolute()
     else:
         if hisat3n_rna_ref is None or hisat3n_dna_ref is None:
             raise ValueError('bismark_ref is required if hisat3n_rna_ref and hisat3n_dna_ref are not specified.')
-        hisat3n_rna_ref = pathlib.Path(hisat3n_rna_ref).absolute()
-        hisat3n_dna_ref = pathlib.Path(hisat3n_dna_ref).absolute()
+        hisat3n_rna_ref = hisat3n_rna_ref #pathlib.Path(hisat3n_rna_ref).absolute()
+        hisat3n_dna_ref = hisat3n_dna_ref #pathlib.Path(hisat3n_dna_ref).absolute()
 
     if mode == 'mct':
         if star_ref is None:
             if hisat3n_rna_ref is None:
                 raise ValueError('star_ref or hisat3n_rna_ref is required if mode is mct.')
         else:
-            star_ref = pathlib.Path(star_ref).absolute()
+            star_ref = star_ref #pathlib.Path(star_ref).absolute()
         if gtf is None:
             raise ValueError('gtf must be provided when mode is mct.')
-        gtf = pathlib.Path(gtf).absolute()
+        gtf = gtf #pathlib.Path(gtf).absolute()
 
     if chrom_size_path is None:
         raise ValueError('chrom_size_path must be provided.')
-    chrom_size_path = pathlib.Path(chrom_size_path).absolute()
+    chrom_size_path = chrom_size_path #pathlib.Path(chrom_size_path).absolute()
 
     if mode == 'm3c':
         pass
@@ -53,13 +53,13 @@ def print_default_mapping_config(mode,
     if mode == '4m':
         if (star_ref is None) and (hisat3n_rna_ref is None):
             raise ValueError('star_ref or hisat3n_rna_ref is required if mode is mct.')
-        star_ref = pathlib.Path(star_ref).absolute()
+        star_ref = star_ref #pathlib.Path(star_ref).absolute()
 
         if gtf is None:
             raise ValueError('gtf must be provided when mode is mct.')
-        gtf = pathlib.Path(gtf).absolute()
+        gtf = gtf #pathlib.Path(gtf).absolute()
 
-    genome_fasta = pathlib.Path(genome_fasta).absolute()
+    genome_fasta = genome_fasta #pathlib.Path(genome_fasta).absolute()
 
     if mode == 'mc':
         if nome:

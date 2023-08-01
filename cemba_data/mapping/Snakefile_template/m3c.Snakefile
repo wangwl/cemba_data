@@ -22,6 +22,11 @@ if "gcp" in config:
 else:
     gcp=False
 
+if gcp:
+    from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
+    GS = GSRemoteProvider()
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =os.path.expanduser('~/.config/gcloud/application_default_credentials.json')
+
 # the summary rule is the final target
 rule summary:
     input:
@@ -48,27 +53,27 @@ rule summary:
 # Trim reads
 rule trim_r1:
     input:
-        "fastq/{cell_id}-R1.fq.gz"
+        fq=local("fastq/{cell_id}-R1.fq.gz") #if not gcp else GS.remote("gs://"+workflow.default_remote_prefix+"/fastq/{cell_id}-R1.fq.gz")
     output:
         fq=temp("fastq/{cell_id}-R1.trimmed.fq.gz"),
         stats=temp("fastq/{cell_id}-R1.trimmed.stats.tsv")
     threads:
         2
     shell:
-        "cutadapt --report=minimal -a {r1_adapter} {input} 2> {output.stats} | "
+        "cutadapt --report=minimal -a {r1_adapter} {input.fq} 2> {output.stats} | "
         "cutadapt --report=minimal -O 6 -q 20 -u {r1_left_cut} -u -{r1_right_cut} -m 30 "
         "-o {output.fq} - >> {output.stats}"
 
 rule trim_r2:
     input:
-        "fastq/{cell_id}-R2.fq.gz"
+        fq=local("fastq/{cell_id}-R2.fq.gz") #if not gcp else GS.remote("gs://"+workflow.default_remote_prefix+"/fastq/{cell_id}-R2.fq.gz")
     output:
         fq=temp("fastq/{cell_id}-R2.trimmed.fq.gz"),
         stats=temp("fastq/{cell_id}-R2.trimmed.stats.tsv")
     threads:
         2
     shell:
-        "cutadapt --report=minimal -a {r2_adapter} {input} 2> {output.stats} | "
+        "cutadapt --report=minimal -a {r2_adapter} {input.fq} 2> {output.stats} | "
         "cutadapt --report=minimal -O 6 -q 20 -u {r2_left_cut} -u -{r2_right_cut} -m 30 "
         "-o {output.fq} - >> {output.stats}"
 

@@ -30,8 +30,19 @@ yap demultiplex --fastq_pattern "test_fastq/*.gz" -o mapping -j 4 --aligner bism
 
 ```
 ## 4. Run mapping
+### Run on local computer or HPC
 ```shell
 sh mapping/snakemake/qsub/snakemake_cmd.txt
+```
+### Run on GCP manually
+```shell
+scp mapping/AMB_220510_8wk_12D_13B_2_P3-5-A11/Snakefile highmem1:~/sky_workdir
+scp -r mapping/AMB_220510_8wk_12D_13B_2_P3-5-A11/fastq highmem1:~/sky_workdir
+# GCP
+prefix="mapping_example/mapping/test/AMB_220510_8wk_12D_13B_2_P3-6-A11"
+mamba env create -f https://raw.githubusercontent.com/DingWB/cemba_data/master/env.yaml
+mkdir -p ~/Ref && gsutil -m cp -r -n gs://wubin_ref/hg38 ~/Ref
+snakemake --snakefile ~/sky_workdir/Snakefile -j 8 --default-resources mem_mb=100 --resources mem_mb=50000 --config gcp=True --default-remote-prefix ${prefix} --default-remote-provider GS --google-lifesciences-region us-west1 -np
 ```
 
 # YAP (Yet Another Pipeline)
