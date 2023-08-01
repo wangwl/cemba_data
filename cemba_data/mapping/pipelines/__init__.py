@@ -148,7 +148,7 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
     for snake_file in snake_files:
         uid = snake_file.parent.name
         yaml_path = sky_dir / f"{uid}.yaml"
-        outdir=str(output_dir)
+        outdir=output_dir.name
         workdir=str(output_dir)+f"/{uid}"
         print(yaml_path)
         with open(yaml_path,'w') as f:
