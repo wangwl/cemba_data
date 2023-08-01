@@ -18,8 +18,10 @@ pip install git+https://github.com/DingWB/cemba_data
 
 # Documentation
 ## 1. Make sure create the right environment
+```shell
 git clone https://github.com/DingWB/cemba_data.git
 mamba env create -f cemba_data/env.yaml
+```
 ## 2. Generate config.ini
 ```shell
 yap default-mapping-config --mode m3c --barcode_version V2 --bismark_ref "~/Ref/hg38/hg38_ucsc_with_chrL.bismark1" \
