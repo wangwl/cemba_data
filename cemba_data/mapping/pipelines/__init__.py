@@ -130,6 +130,7 @@ def write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_di
     return script_path
 
 def write_gcp_skypolit_yaml(output_dir, template_path):
+    output_dir=pathlib.Path(output_dir).absolute()
     config = get_configuration(output_dir / 'mapping_config.ini')
     try:
         mode = config['mode']
