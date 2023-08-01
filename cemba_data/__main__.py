@@ -329,6 +329,29 @@ def demultiplex_register_subparser(subparser):
     )
     return
 
+def generate_skypilot_yaml_register_subparser(subparser):
+    parser = subparser.add_parser('gcp',
+                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                  help="generate or update skypilot yaml")
+
+    parser_req = parser.add_argument_group("Required inputs")
+
+    parser_req.add_argument(
+        "--output_dir",
+        "-o",
+        type=str,
+        required=True,
+        help="Pipeline output directory, will be created recursively."
+    )
+
+    parser_req.add_argument(
+        "--sky_template",
+        type=str,
+        default=None,
+        help="skypilot template used to run the pipeline on GCP"
+    )
+    return    
+
 
 def update_snakemake_register_subparser(subparser):
     parser = subparser.add_parser('update-snakemake',
@@ -750,6 +773,7 @@ def main():
     print_plate_info_register_subparser(subparsers)
     make_sample_sheet_register_subparser(subparsers)
     demultiplex_register_subparser(subparsers)
+    generate_skypilot_yaml_register_subparser(subparsers)
     update_snakemake_register_subparser(subparsers)
     start_from_cell_fastq_register_subparser(subparsers)
     summary_register_subparser(subparsers)
@@ -804,6 +828,8 @@ def main():
         from cemba_data.snm3C import prepare_impute_dir as func
     elif cur_command == 'm3c-dataset':
         from cemba_data.snm3C import prepare_dataset_commands as func
+    elif cur_command == 'gcp':
+        from cemba_data.mapping.pipelines import write_gcp_skypolit_yaml as func
     else:
         log.debug(f'{cur_command} not Known, check the main function if else part')
         parser.parse_args(["-h"])
