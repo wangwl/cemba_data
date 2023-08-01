@@ -8,12 +8,15 @@ resources:
     use_spot: True
     disk_size: 250
     disk_tier: 'medium'
+    image_id: projects/ecker-wding/global/images/basic
 
 # file_mounts:
 #   ~/Ref/hg38: ~/Ref/hg38
 
 setup: |
-  mamba env create -f https://raw.githubusercontent.com/DingWB/cemba_data/master/env.yaml
+  # pip install --upgrade pip
+  # conda install -y -n base -c conda-forge -c bioconda mamba
+  # mamba env create -f https://raw.githubusercontent.com/DingWB/cemba_data/master/env.yaml
   mkdir -p ~/Ref && gsutil -m cp -r -n gs://wubin_ref/hg38 ~/Ref
 
 run: |

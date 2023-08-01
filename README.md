@@ -55,7 +55,7 @@ snakemake --snakefile ~/sky_workdir/Snakefile -j 8 --default-resources mem_mb=10
 yap gcp -o mapping -t m3c_skypilot_template.yaml
 
 # spot
-sky spot launch -y -n test -i 10 mapping/snakemake/gcp/AMB_220510_8wk_12D_13B_2_P3-3-A11.yaml
+sky spot launch -y mapping/snakemake/gcp/AMB_220510_8wk_12D_13B_2_P3-3-A11.yaml
 ```
 
 # YAP (Yet Another Pipeline)
