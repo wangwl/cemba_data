@@ -1,0 +1,24 @@
+name: {uid}
+workdir: {workdir}
+num_nodes: 1
+resources:
+    cloud: gcp
+    region: us-west1
+    instance_type: n1-standard-8
+    use_spot: True
+    disk_size: 250
+    disk_tier: 'medium'
+
+# file_mounts:
+#   ~/Ref/hg38: ~/Ref/hg38
+
+setup: |
+  mamba env create -f https://raw.githubusercontent.com/DingWB/cemba_data/master/env.yaml
+  mkdir -p ~/Ref && gsutil -m cp -r -n gs://wubin_ref/hg38 ~/Ref
+
+run: |
+  conda activate yap
+  # prefix="mapping_example/mapping/test/AMB_220510_8wk_12D_13B_2_P3-6-A11"
+  snakemake --snakefile ~/sky_workdir/Snakefile -j 8 --default-resources mem_mb=100 \
+          --resources mem_mb=50000 --config gcp=True --default-remote-prefix bucket_name/{outdir}/pool_name/{uid} \
+          --default-remote-provider GS --google-lifesciences-region us-west1

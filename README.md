@@ -22,7 +22,10 @@ git clone https://github.com/DingWB/cemba_data.git
 mamba env create -f cemba_data/env.yaml
 ## 2. Generate config.ini
 ```shell
-yap default-mapping-config --mode m3c --barcode_version V2 --bismark_ref ${HOME}/Ref/hg38/hg38_ucsc_with_chrL.bismark1 --genome ${HOME}/Ref/hg38/hg38_ucsc_with_chrL.fa --chrom_size_path ${HOME}/Ref/hg38/hg38_ucsc.main.chrom.sizes > config.ini
+yap default-mapping-config --mode m3c --barcode_version V2 --bismark_ref "~/Ref/hg38/hg38_ucsc_with_chrL.bismark1" \
+      --genome "~/Ref/hg38/hg38_ucsc_with_chrL.fa" --chrom_size_path "~/Ref/hg38/hg38_ucsc.main.chrom.sizes"  \
+      > config.ini
+# pay attention to the path of reference, should be the same as on the GCP if you are going to run the pipeline on GCP.      
 ```
 ## 3. Demultiplex
 ```shell

@@ -429,7 +429,7 @@ def _reformat_v2_single(output_dir):
 SUPPORTED_TECHNOLOGY = ['mc', 'mct', 'm3c']
 
 
-def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner):
+def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner,sky_template):
     cpu = int(cpu)
     merge_cpu = min(48, cpu)
     demultiplex_cpu = min(32, cpu)
@@ -468,7 +468,7 @@ def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner):
     _skip_abnormal_fastq_pairs(output_dir=output_dir)
 
     if aligner.lower() == 'bismark':
-        make_snakefile(output_dir=output_dir)
+        make_snakefile(output_dir=output_dir,sky_template=sky_template)
 
         # this is just a convenient step, so I fix the parameters here
         # users should change the resulting batch submission

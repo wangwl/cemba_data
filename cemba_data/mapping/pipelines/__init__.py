@@ -61,7 +61,7 @@ def validate_mapping_config(output_dir):
     return
 
 
-def make_snakefile(output_dir):
+def make_snakefile(output_dir,sky_template):
     output_dir = pathlib.Path(output_dir).absolute()
     config = get_configuration(output_dir / 'mapping_config.ini')
     try:
@@ -91,6 +91,7 @@ def make_snakefile(output_dir):
                 prepare_uid_snakefile(uid_dir=sub_dir,
                                       config_str=config_str,
                                       snake_template=snake_template)
+    write_gcp_skypolit_yaml(output_dir=output_dir, template_path=sky_template)
     return
 
 
@@ -126,6 +127,30 @@ def write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_di
             # uid_order file do not exist (when starting from cell FASTQs)
             for cmd in cmds.values():
                 f.write(cmd + '\n')
+    return script_path
+
+def write_gcp_skypolit_yaml(output_dir=None, template_path=None):
+    config = get_configuration(output_dir / 'mapping_config.ini')
+    try:
+        mode = config['mode']
+    except KeyError:
+        raise KeyError('mode not found in the config file.')
+    if template_path is None:
+        with open(PACKAGE_DIR / f'files/{mode}_skypilot_template.yaml') as f:
+            template = f.read()
+    else:
+        with open(template_path) as f:
+            template = f.read()
+    sky_dir=output_dir/"snakemake/gcp"
+    sky_dir.mkdir(exist_ok=True, parents=True)
+    snake_files = list(output_dir.glob('*/Snakefile'))
+    for snake_file in snake_files:
+        uid = snake_file.parent.name
+        yaml_path = sky_dir / f"{uid}.yaml"
+        outdir=str(output_dir)
+        workdir=str(output_dir)+f"/{uid}"
+        with open(yaml_path,'w') as f:
+            f.write(template.format(uid=uid,workdir=workdir,outdir=outdir))
     return script_path
 
 
