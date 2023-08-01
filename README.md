@@ -50,6 +50,14 @@ mkdir -p ~/Ref && gsutil -m cp -r -n gs://wubin_ref/hg38 ~/Ref
 snakemake --snakefile ~/sky_workdir/Snakefile -j 8 --default-resources mem_mb=100 --resources mem_mb=50000 --config gcp=True --default-remote-prefix ${prefix} --default-remote-provider GS --google-lifesciences-region us-west1 -np
 ```
 
+### Run on GCP automatically
+```shell
+yap gcp -o mapping -t m3c_skypilot_template.yaml
+
+# spot
+sky spot launch -y -n test -i 10 mapping/snakemake/gcp/AMB_220510_8wk_12D_13B_2_P3-3-A11.yaml
+```
+
 # YAP (Yet Another Pipeline)
 Pipeline(s) for mapping and cluster-level aggregation of single nucleus methylome and multi-omic datasets.
 Technologies supported:

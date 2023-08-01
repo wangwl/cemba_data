@@ -1,4 +1,4 @@
-name: {uid}
+name: {name}
 workdir: {workdir}
 num_nodes: 1
 resources:

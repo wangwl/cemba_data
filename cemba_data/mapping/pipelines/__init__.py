@@ -152,7 +152,7 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
         workdir=str(output_dir)+f"/{uid}"
         print(yaml_path)
         with open(yaml_path,'w') as f:
-            f.write(template.format(uid=uid,workdir=workdir,outdir=outdir))
+            f.write(template.format(name=uid.lower(),uid=uid,workdir=workdir,outdir=outdir))
 
 
 def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, queue):
