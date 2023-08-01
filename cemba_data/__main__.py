@@ -345,7 +345,7 @@ def generate_skypilot_yaml_register_subparser(subparser):
     )
 
     parser_req.add_argument(
-        "--sky_template",
+        "--template_path",
         "-t",
         type=str,
         default=None,
