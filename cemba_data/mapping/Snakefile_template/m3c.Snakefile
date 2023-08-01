@@ -2,6 +2,26 @@
 # Snakemake rules below
 # suitable for snm3C-seq
 
+# example 1: run on local HPC:
+
+# snakemake -d /gale/ddn/bican/Wubin/run_pipeline/mapping/AMB_220510_8wk_12D_13B_2_P3-5-A11 \
+# --snakefile /gale/ddn/bican/Wubin/run_pipeline/mapping/AMB_220510_8wk_12D_13B_2_P3-5-A11/Snakefile \
+# -j 10 --default-resources mem_mb=100 --resources mem_mb=50000
+
+# example 2: run on GCP
+# sync Snakefile to GCP:~/sky_workdir
+
+# conda activate yap
+# prefix="DATASET/mapping/Pool1/AMB_220510_8wk_12D_13B_2_P3-5-A11/"
+# snakemake --snakefile ~/sky_workdir/Snakefile -j 10 --default-resources mem_mb=100 --resources mem_mb=50000 
+# --config gcp=True --default-remote-prefix ${prefix} \
+# --default-remote-provider GS --google-lifesciences-region us-west1 -np
+
+if "gcp" in config:
+    gcp=config["gcp"] # if the fastq files stored in GCP cloud, set gcp=True in snakemake: --config gcp=True
+else:
+    gcp=False
+
 # the summary rule is the final target
 rule summary:
     input:
@@ -20,8 +40,10 @@ rule summary:
         expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
     output:
         "MappingSummary.csv.gz"
+    params:
+        outdir=os.path.abspath("./") if not gcp else workflow.default_remote_prefix
     shell:
-        "yap-internal summary --output_dir ./"
+        "yap-internal summary --output_dir {params.outdir}"
 
 # Trim reads
 rule trim_r1:
@@ -58,6 +80,8 @@ rule bismark_r1:
         bam=temp("bam/{cell_id}-R1.trimmed_bismark.bam"),
         um=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.fq.gz"),
         stats=temp("bam/{cell_id}-R1.trimmed_bismark_SE_report.txt")
+    params:
+        bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
         3
     resources:
@@ -65,7 +89,7 @@ rule bismark_r1:
     shell:
         # map R1 with --pbat mode
         "bismark {bismark_reference} -un --bowtie1 {input} "
-        "--pbat -o bam/ --temp_dir bam/"
+        "--pbat -o {params.bam_dir} --temp_dir {params.bam_dir}"
 
 rule bismark_r2:
     input:
@@ -74,6 +98,8 @@ rule bismark_r2:
         bam=temp("bam/{cell_id}-R2.trimmed_bismark.bam"),
         um=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.fq.gz"),
         stats=temp("bam/{cell_id}-R2.trimmed_bismark_SE_report.txt")
+    params:
+        bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
         3
     resources:
@@ -81,7 +107,7 @@ rule bismark_r2:
     shell:
         # map R2 with normal SE mode
         "bismark {bismark_reference} -un --bowtie1 {input} "
-        "-o bam/ --temp_dir bam/"
+        "-o {params.bam_dir} --temp_dir {params.bam_dir}"
 
 
 # split unmapped fastq
@@ -116,6 +142,8 @@ rule bismark_split_r1:
     output:
         bam=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark.bam"),
         stats=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt")
+    params:
+        bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
         3
     resources:
@@ -123,7 +151,7 @@ rule bismark_split_r1:
     shell:
         # map R1 with --pbat mode
         "bismark {bismark_reference} --bowtie1 {input} "
-        "--pbat -o bam/ --temp_dir bam/"
+        "--pbat -o {params.bam_dir} --temp_dir {params.bam_dir}"
 
 rule bismark_split_r2:
     input:
@@ -131,6 +159,8 @@ rule bismark_split_r2:
     output:
         bam=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark.bam"),
         stats=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt")
+    params:
+        bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
         3
     resources:
@@ -138,7 +168,7 @@ rule bismark_split_r2:
     shell:
         # map R2 with normal SE mode
         "bismark {bismark_reference} --bowtie1 {input} "
-        "-o bam/ --temp_dir bam/"
+        "-o {params.bam_dir} --temp_dir {params.bam_dir}"
 
 # merge two bam files
 rule merge_r1_raw_bam:
@@ -205,11 +235,13 @@ rule dedup_r1_bam:
     output:
         bam=temp("bam/{cell_id}-R1.two_mapping.deduped.bam"),
         stats=temp("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt")
+    params:
+        tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
         mem_mb=1000
     shell:
         "picard MarkDuplicates I={input} O={output.bam} M={output.stats} "
-        "REMOVE_DUPLICATES=true TMP_DIR=bam/temp/"
+        "REMOVE_DUPLICATES=true TMP_DIR={params.tmp_dir}"
 
 rule dedup_r2_bam:
     input:
@@ -217,11 +249,13 @@ rule dedup_r2_bam:
     output:
         bam=temp("bam/{cell_id}-R2.two_mapping.deduped.bam"),
         stats=temp("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt")
+    params:
+        tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
         mem_mb=1000
     shell:
         "picard MarkDuplicates I={input} O={output.bam} M={output.stats} "
-        "REMOVE_DUPLICATES=true TMP_DIR=bam/temp/"
+        "REMOVE_DUPLICATES=true TMP_DIR={params.tmp_dir}"
 
 # merge R1 and R2, get final bam for mC calling
 rule merge_mc_bam:
