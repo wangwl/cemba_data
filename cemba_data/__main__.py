@@ -346,6 +346,7 @@ def generate_skypilot_yaml_register_subparser(subparser):
 
     parser_req.add_argument(
         "--sky_template",
+        "-t",
         type=str,
         default=None,
         help="skypilot template used to run the pipeline on GCP"
