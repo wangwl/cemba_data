@@ -108,7 +108,7 @@ def m3c_mapping_stats(output_dir,fastq_dir,mode,mc_stat_feature,mc_stat_alias,nu
             )
         # contacts
         contact_counts = pd.read_csv(hic_dir / f'{cell_id}.3C.contact.tsv.counts.txt',
-                                     header=None, index_col=0, squeeze=True)
+                                     header=None, index_col=0).squeeze()
         contact_counts.name = cell_id
         total_stats.append(contact_counts)
 
