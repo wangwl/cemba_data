@@ -238,6 +238,12 @@ def mapping_summary_internal_subparser(subparser):
     )
 
     parser_req.add_argument(
+        "--fastq_dir",
+        type=str,
+        help="fastq_dir for pipeline on GCP"
+    )
+
+    parser_req.add_argument(
         "--mode",
         type=str,
         required=True,

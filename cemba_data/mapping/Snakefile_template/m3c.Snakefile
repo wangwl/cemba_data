@@ -34,6 +34,8 @@ else:
     allc_dir="allc"
     hic_dir="hic"
 
+fastq_dir=os.path.abspath("fastq")
+
 # the summary rule is the final target
 rule summary:
     input:
@@ -53,10 +55,10 @@ rule summary:
     output:
         "MappingSummary.csv.gz"
     params:
-        outdir=os.path.abspath("./") if not gcp else workflow.default_remote_prefix
+        outdir=os.path.abspath("./") if not gcp else workflow.default_remote_prefix,
     shell:
         """
-        yap-internal summary --output_dir {params.outdir} --mode {mode} --barcode_version {barcode_version} \
+        yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} --mode {mode} --barcode_version {barcode_version} \
                     --mc_stat_feature "{mc_stat_feature}" --mc_stat_alias "{mc_stat_alias}" \
                     --num_upstr_bases {num_upstr_bases}
         """
