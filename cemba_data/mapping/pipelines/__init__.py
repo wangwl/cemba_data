@@ -153,9 +153,10 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
         outdir=output_dir.name
         workdir=str(output_dir)+f"/{uid}"
         print(yaml_path)
+        name=uid.lower()
         with open(yaml_path,'w') as f:
-            f.write(template.format(name=uid.lower(),uid=uid,workdir=workdir,outdir=outdir))
-        f_cmd.write(f"sky spot launch -n {uid} -y "+str(yaml_path)+"\n")
+            f.write(template.format(name=name,uid=uid,workdir=workdir,outdir=outdir))
+        f_cmd.write(f"sky spot launch -n {name} -y "+str(yaml_path)+"\n")
     f_cmd.close()
 
 
