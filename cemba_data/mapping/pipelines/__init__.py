@@ -146,6 +146,7 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
     sky_dir=output_dir/"snakemake/gcp"
     sky_dir.mkdir(exist_ok=True, parents=True)
     snake_files = list(output_dir.glob('*/Snakefile'))
+    f_cmd=open(sky_dir / "sky_spot.sh",'w')
     for snake_file in snake_files:
         uid = snake_file.parent.name
         yaml_path = sky_dir / f"{uid}.yaml"
@@ -154,6 +155,8 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
         print(yaml_path)
         with open(yaml_path,'w') as f:
             f.write(template.format(name=uid.lower(),uid=uid,workdir=workdir,outdir=outdir))
+        f_cmd.write(f"sky spot launch -n {uid} -y "+str(yaml_path)+"\n")
+    f_cmd.close()
 
 
 def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, queue):
