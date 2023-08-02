@@ -160,7 +160,10 @@ rule filter_bam:
         bam=local(temp("{sname}.filter.bam")),
         bai=local(temp("{sname}.filter.bam.bai"))
     shell:
-        "samtools view -b -h -q 10 -o {output} {input}"
+        """
+        samtools view -b -h -q 10 -o {output.bam} {input}
+        samtools index {output.bam}
+        """
 
 # sort bam by coords
 rule sort_bam:
@@ -172,8 +175,7 @@ rule sort_bam:
         mem_mb=1000
     shell:
         """
-        samtools sort -o {output.bam} {input}
-        samtools index {output.bam}
+        samtools sort -o {output} {input}
         """
 
 # remove PCR duplicates
