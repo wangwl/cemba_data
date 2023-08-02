@@ -32,17 +32,17 @@ rule summary:
     input:
         expand("allc/{cell_id}.allc.tsv.gz", cell_id=CELL_IDS),
         # also add all the stats path here, so they won't be deleted until summary is generated
-        expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
-        expand("fastq/{cell_id}-R1.trimmed.stats.tsv", cell_id=CELL_IDS),
-        expand("fastq/{cell_id}-R2.trimmed.stats.tsv", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R1.two_mapping.filter.bam", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R2.two_mapping.filter.bam", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R1.two_mapping.deduped.bam", cell_id=CELL_IDS),
-        expand("bam/{cell_id}-R2.two_mapping.deduped.bam", cell_id=CELL_IDS),
+        local(expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS)),
+        local(expand("fastq/{cell_id}-R1.trimmed.stats.tsv", cell_id=CELL_IDS)),
+        local(expand("fastq/{cell_id}-R2.trimmed.stats.tsv", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R1.two_mapping.filter.bam", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R2.two_mapping.filter.bam", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R1.two_mapping.deduped.bam", cell_id=CELL_IDS)),
+        local(expand("bam/{cell_id}-R2.two_mapping.deduped.bam", cell_id=CELL_IDS)),
         expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
-        expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
+        local(expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS))
     output:
         "MappingSummary.csv.gz"
     params:
