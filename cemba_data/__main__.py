@@ -369,6 +369,13 @@ def update_snakemake_register_subparser(subparser):
         required=True,
         help="Pipeline output directory."
     )
+
+    parser_req.add_argument(
+        "--sky_template",
+        type=str,
+        default=None,
+        help="skypilot template used to run the pipeline on GCP"
+    )
     return
 
 

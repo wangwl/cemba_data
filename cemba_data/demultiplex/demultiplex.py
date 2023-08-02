@@ -481,7 +481,7 @@ def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner,sk
     return
 
 
-def update_snakemake(output_dir):
+def update_snakemake(output_dir,sky_template):
     """When mapping_config.ini is updated, or the output_dir path changed,
     use this function to update snakefile and snakemake commands."""
     output_dir = pathlib.Path(output_dir).absolute()
@@ -490,6 +490,6 @@ def update_snakemake(output_dir):
         # hisat3n pipeline
         make_snakefile_hisat3n(output_dir=output_dir)
     else:
-        make_snakefile(output_dir=output_dir)
+        make_snakefile(output_dir,sky_template)
         prepare_run(output_dir)
     return
