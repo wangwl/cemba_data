@@ -97,8 +97,10 @@ rule bismark_r1:
         mem_mb=14000
     shell:
         # map R1 with --pbat mode
-        "bismark {bismark_reference} -un --bowtie1 {input} "
-        "--pbat -o {params.bam_dir} --temp_dir {params.bam_dir}"
+        """
+        mkdir -p {params.bam_dir}
+        bismark {bismark_reference} -un --bowtie1 {input} --pbat -o {params.bam_dir} --temp_dir {params.bam_dir}
+        """
 
 rule bismark_r2:
     input:
@@ -115,8 +117,10 @@ rule bismark_r2:
         mem_mb=14000
     shell:
         # map R2 with normal SE mode
-        "bismark {bismark_reference} -un --bowtie1 {input} "
-        "-o {params.bam_dir} --temp_dir {params.bam_dir}"
+        """
+        mkdir -p {params.bam_dir}
+        bismark {bismark_reference} -un --bowtie1 {input} -o {params.bam_dir} --temp_dir {params.bam_dir}
+        """
 
 
 # split unmapped fastq
@@ -233,12 +237,15 @@ rule allc:
         allc="allc/{cell_id}.allc.tsv.gz",
         tbi="allc/{cell_id}.allc.tsv.gz.tbi",
         stats=local(temp("allc/{cell_id}.allc.tsv.gz.count.csv"))
+    params:
+        allc_dir=os.path.abspath("allc") if not gcp else workflow.default_remote_prefix+"/allc"
     threads:
         2
     resources:
         mem_mb=500
     shell:
         """
+        mkdir -p {params.allc_dir}
         allcools bam-to-allc \
                 --bam_path {input.bam} \
                 --reference_fasta {reference_fasta} \
@@ -278,8 +285,13 @@ rule generate_contact:
     output:
         contact="hic/{cell_id}.3C.contact.tsv.gz",
         stats=local(temp("hic/{cell_id}.3C.contact.tsv.counts.txt"))
+    params:
+        hic_dir=os.path.abspath("hic") if not gcp else workflow.default_remote_prefix+"/allc"
     resources:
         mem_mb=300
     shell:
-        "yap-internal generate-contacts --bam_path {input} --output_path {output.contact} "
-        "--chrom_size_path {chrom_size_path} --min_gap {min_gap}"
+        """
+        mkdir -p {params.hic_dir}
+        yap-internal generate-contacts --bam_path {input} --output_path {output.contact} \
+                    --chrom_size_path {chrom_size_path} --min_gap {min_gap}
+        """
