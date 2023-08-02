@@ -237,6 +237,54 @@ def mapping_summary_internal_subparser(subparser):
         help="output_dir of each UID"
     )
 
+    parser_req.add_argument(
+        "--mode",
+        type=str,
+        required=True,
+        help="mode"
+    )
+
+    parser_req.add_argument(
+        "--barcode_version",
+        type=str,
+        required=True,
+        help="barcode_version"
+    )
+    
+    parser_req.add_argument(
+        "--mc_stat_feature",
+        type=str,
+        default=None,
+        help="mc_stat_feature"
+    )
+
+    parser_req.add_argument(
+        "--mc_stat_alias",
+        type=str,
+        default=None,
+        help="mc_stat_alias"
+    )
+
+    parser_req.add_argument(
+        "--num_upstr_bases",
+        type=int,
+        default=0,
+        help="num_upstr_bases"
+    )
+
+    parser_req.add_argument(
+        "--mc_rate_max_threshold",
+        type=float,
+        default=0.5,
+        help="mc_rate_max_threshold"
+    )
+
+    parser_req.add_argument(
+        "--dna_cov_min_threshold",
+        type=int,
+        default=3,
+        help="dna_cov_min_threshold"
+    )
 
 def split_read_internal_subparser(subparser):
     parser = subparser.add_parser('m3c-split-reads',

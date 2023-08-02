@@ -123,13 +123,15 @@ def parse_deduplicate_stat(stat_path):
     return dedup_result_series
 
 
-def generate_allc_stats(output_dir, config):
+def generate_allc_stats(output_dir, mc_stat_feature,mc_stat_alias,num_upstr_bases):
     output_dir = pathlib.Path(output_dir).absolute()
     allc_list = list(output_dir.glob('allc/*tsv.gz'))
     allc_stats_dict = {p.name.split('.')[0]: p for p in output_dir.glob('allc/*count.csv')}
 
-    patterns = config['mc_stat_feature'].split(' ')
-    patterns_alias = config['mc_stat_alias'].split(' ')
+    # patterns = config['mc_stat_feature'].split(' ')
+    # patterns_alias = config['mc_stat_alias'].split(' ')
+    patterns = mc_stat_feature.split(' ')
+    patterns_alias = mc_stat_alias.split(' ')
     pattern_translate = {k: v for k, v in zip(patterns, patterns_alias)}
 
     # real all cell stats
@@ -159,7 +161,8 @@ def generate_allc_stats(output_dir, config):
     final_df['GenomeCov'] = cell_genome_cov
 
     # add lambda DNA mCY fraction and coverage
-    lambda_frac = get_allc_lambda_frac(allc_list, config['num_upstr_bases'])
+    # lambda_frac = get_allc_lambda_frac(allc_list, config['num_upstr_bases'])
+    lambda_frac = get_allc_lambda_frac(allc_list, num_upstr_bases)
     for col, data in lambda_frac.items():
         final_df[col] = data
 
