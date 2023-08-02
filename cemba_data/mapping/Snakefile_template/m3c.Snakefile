@@ -120,23 +120,11 @@ rule bismark_r2:
 
 
 # split unmapped fastq
-rule split_um_fastq_r1:
+rule split_um_fastq:
     input:
-        "bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.fq.gz"
+        "bam/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.fq.gz"
     output:
-        local(temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split.fq.gz"))
-    threads:
-        1
-    shell:
-        "yap-internal m3c-split-reads --fastq_path {input} --output_path {output} "
-        "--size_l {split_left_size} --size_r {split_right_size} "
-        "--size_m {split_middle_min_size} --trim_b {trim_on_both_end}"
-
-rule split_um_fastq_r2:
-    input:
-        "bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.fq.gz"
-    output:
-        local(temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split.fq.gz"))
+        local(temp("bam/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split.fq.gz"))
     threads:
         1
     shell:
@@ -180,84 +168,43 @@ rule bismark_split_r2:
         "-o {params.bam_dir} --temp_dir {params.bam_dir}"
 
 # merge two bam files
-rule merge_r1_raw_bam:
+rule merge_raw_bam:
     input:
-        "bam/{cell_id}-R1.trimmed_bismark.bam",
-        "bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark.bam"
+        "bam/{cell_id}-{read_type}.trimmed_bismark.bam",
+        "bam/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark.bam"
     output:
-        local(temp("bam/{cell_id}-R1.two_mapping.bam"))
-    shell:
-        "samtools merge -f {output} {input}"
-
-rule merge_r2_raw_bam:
-    input:
-        "bam/{cell_id}-R2.trimmed_bismark.bam",
-        "bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark.bam"
-    output:
-        local(temp("bam/{cell_id}-R2.two_mapping.bam"))
+        local(temp("bam/{cell_id}-{read_type}.two_mapping.bam"))
     shell:
         "samtools merge -f {output} {input}"
 
 
 # filter bam
-rule filter_r1_bam:
+rule filter_bam:
     input:
-        "bam/{cell_id}-R1.two_mapping.bam"
+        local("{sname}.bam")
     output:
-        local(temp("bam/{cell_id}-R1.two_mapping.filter.bam"))
-    shell:
-        "samtools view -b -h -q 10 -o {output} {input}"
-
-rule filter_r2_bam:
-    input:
-        "bam/{cell_id}-R2.two_mapping.bam"
-    output:
-        local(temp("bam/{cell_id}-R2.two_mapping.filter.bam"))
+        local(temp("{sname}.filter.bam"))
     shell:
         "samtools view -b -h -q 10 -o {output} {input}"
 
 # sort bam by coords
-rule sort_r1_bam:
+rule sort_bam:
     input:
-        "bam/{cell_id}-R1.two_mapping.filter.bam"
+        local("{sname}.filter.bam")
     output:
-        local(temp("bam/{cell_id}-R1.two_mapping.sorted.bam"))
-    resources:
-        mem_mb=1000
-    shell:
-        "samtools sort -o {output} {input}"
-
-rule sort_r2_bam:
-    input:
-        "bam/{cell_id}-R2.two_mapping.filter.bam"
-    output:
-        local(temp("bam/{cell_id}-R2.two_mapping.sorted.bam"))
+        local(temp("{sname}.sorted.bam"))
     resources:
         mem_mb=1000
     shell:
         "samtools sort -o {output} {input}"
 
 # remove PCR duplicates
-rule dedup_r1_bam:
+rule dedup_bam:
     input:
-        "bam/{cell_id}-R1.two_mapping.sorted.bam"
+        local("{sname}.sorted.bam")
     output:
-        bam=local(temp("bam/{cell_id}-R1.two_mapping.deduped.bam")),
-        stats=local(temp("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt"))
-    params:
-        tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
-    resources:
-        mem_mb=1000
-    shell:
-        "picard MarkDuplicates I={input} O={output.bam} M={output.stats} "
-        "REMOVE_DUPLICATES=true TMP_DIR={params.tmp_dir}"
-
-rule dedup_r2_bam:
-    input:
-        "bam/{cell_id}-R2.two_mapping.sorted.bam"
-    output:
-        bam=local(temp("bam/{cell_id}-R2.two_mapping.deduped.bam")),
-        stats=local(temp("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt"))
+        bam=local(temp("{sname}.deduped.bam")),
+        stats=local(temp("{sname}.deduped.matrix.txt"))
     params:
         tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
@@ -269,8 +216,8 @@ rule dedup_r2_bam:
 # merge R1 and R2, get final bam for mC calling
 rule merge_mc_bam:
     input:
-        "bam/{cell_id}-R1.two_mapping.deduped.bam",
-        "bam/{cell_id}-R2.two_mapping.deduped.bam"
+        local("bam/{cell_id}-R1.two_mapping.deduped.bam"),
+        local("bam/{cell_id}-R2.two_mapping.deduped.bam")
     output:
         bam=local(temp("bam/{cell_id}.mC.bam")),
         bai=local(temp("bam/{cell_id}.mC.bam.bai"))
@@ -280,8 +227,8 @@ rule merge_mc_bam:
 # generate ALLC
 rule allc:
     input:
-        bam="bam/{cell_id}.mC.bam",
-        index="bam/{cell_id}.mC.bam.bai"
+        bam=local("bam/{cell_id}.mC.bam"),
+        index=local("bam/{cell_id}.mC.bam.bai")
     output:
         allc="allc/{cell_id}.allc.tsv.gz",
         tbi="allc/{cell_id}.allc.tsv.gz.tbi",
@@ -308,8 +255,8 @@ rule allc:
 # contact dedup happen within generate contact
 rule merge_3c_bam_for_contact:
     input:
-        "bam/{cell_id}-R1.two_mapping.sorted.bam",
-        "bam/{cell_id}-R2.two_mapping.sorted.bam"
+        local("bam/{cell_id}-R1.two_mapping.sorted.bam"),
+        local("bam/{cell_id}-R2.two_mapping.sorted.bam")
     output:
         local(temp("bam/{cell_id}.3C.bam"))
     shell:
@@ -317,7 +264,7 @@ rule merge_3c_bam_for_contact:
 
 rule sort_bam_for_contact:
     input:
-        "bam/{cell_id}.3C.bam"
+        local("bam/{cell_id}.3C.bam")
     output:
         "bam/{cell_id}.3C.sorted.bam"
     resources:
