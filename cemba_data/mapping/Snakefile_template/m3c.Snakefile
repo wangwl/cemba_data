@@ -158,11 +158,9 @@ rule filter_bam:
         local("{sname}.bam")
     output:
         bam=local(temp("{sname}.filter.bam")),
-        bai=local(temp("{sname}.filter.bam.bai"))
     shell:
         """
         samtools view -b -h -q 10 -o {output.bam} {input}
-        samtools index {output.bam}
         """
 
 # sort bam by coords
@@ -184,7 +182,6 @@ rule dedup_bam:
         local("{sname}.sorted.bam")
     output:
         bam=local(temp("{sname}.deduped.bam")),
-        bai=local(temp("{sname}.deduped.bam.bai")),
         stats=local(temp("{sname}.deduped.matrix.txt"))
     params:
         tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
@@ -193,7 +190,6 @@ rule dedup_bam:
     shell:
         """
         picard MarkDuplicates I={input} O={output.bam} M={output.stats} REMOVE_DUPLICATES=true TMP_DIR={params.tmp_dir}
-        samtools index {output.bam}
         """
 
 # merge R1 and R2, get final bam for mC calling
