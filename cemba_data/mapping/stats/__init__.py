@@ -4,8 +4,6 @@ import pysam
 from pysam import AlignmentFile
 import pandas as pd
 from papermill import execute_notebook, PapermillExecutionError
-from .m3c import m3c_mapping_stats, m3c_additional_cols
-from .plate_info import get_plate_info
 from ..pipelines import PACKAGE_DIR
 from .utilities import parse_trim_fastq_stats, parse_trim_fastq_stats_mct, \
     parse_bismark_report, parse_deduplicate_stat, \
