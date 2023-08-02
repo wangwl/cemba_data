@@ -50,7 +50,7 @@ rule summary:
     shell:
         """
         yap-internal summary --output_dir {params.outdir} --mode {mode} --barcode_version {barcode_version} \
-                    --mc_stat_feature {mc_stat_feature} --mc_stat_alias {mc_stat_alias} \
+                    --mc_stat_feature "{mc_stat_feature}" --mc_stat_alias "{mc_stat_alias}" \
                     --num_upstr_bases {num_upstr_bases}
         """
 
