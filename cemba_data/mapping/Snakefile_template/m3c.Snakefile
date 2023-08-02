@@ -59,8 +59,8 @@ rule trim_r1:
     input:
         fq=local("fastq/{cell_id}-R1.fq.gz") #if not gcp else GS.remote("gs://"+workflow.default_remote_prefix+"/fastq/{cell_id}-R1.fq.gz")
     output:
-        fq=temp("fastq/{cell_id}-R1.trimmed.fq.gz"),
-        stats=temp("fastq/{cell_id}-R1.trimmed.stats.tsv")
+        fq=local(temp("fastq/{cell_id}-R1.trimmed.fq.gz")),
+        stats=local(temp("fastq/{cell_id}-R1.trimmed.stats.tsv"))
     threads:
         2
     shell:
@@ -72,8 +72,8 @@ rule trim_r2:
     input:
         fq=local("fastq/{cell_id}-R2.fq.gz") #if not gcp else GS.remote("gs://"+workflow.default_remote_prefix+"/fastq/{cell_id}-R2.fq.gz")
     output:
-        fq=temp("fastq/{cell_id}-R2.trimmed.fq.gz"),
-        stats=temp("fastq/{cell_id}-R2.trimmed.stats.tsv")
+        fq=local(temp("fastq/{cell_id}-R2.trimmed.fq.gz")),
+        stats=local(temp("fastq/{cell_id}-R2.trimmed.stats.tsv"))
     threads:
         2
     shell:
@@ -86,9 +86,9 @@ rule bismark_r1:
     input:
         "fastq/{cell_id}-R1.trimmed.fq.gz"
     output:
-        bam=temp("bam/{cell_id}-R1.trimmed_bismark.bam"),
-        um=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.fq.gz"),
-        stats=temp("bam/{cell_id}-R1.trimmed_bismark_SE_report.txt")
+        bam=local(temp("bam/{cell_id}-R1.trimmed_bismark.bam")),
+        um=local(temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.fq.gz")),
+        stats=local(temp("bam/{cell_id}-R1.trimmed_bismark_SE_report.txt"))
     params:
         bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
@@ -104,9 +104,9 @@ rule bismark_r2:
     input:
         "fastq/{cell_id}-R2.trimmed.fq.gz"
     output:
-        bam=temp("bam/{cell_id}-R2.trimmed_bismark.bam"),
-        um=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.fq.gz"),
-        stats=temp("bam/{cell_id}-R2.trimmed_bismark_SE_report.txt")
+        bam=local(temp("bam/{cell_id}-R2.trimmed_bismark.bam")),
+        um=local(temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.fq.gz")),
+        stats=local(temp("bam/{cell_id}-R2.trimmed_bismark_SE_report.txt"))
     params:
         bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
@@ -124,7 +124,7 @@ rule split_um_fastq_r1:
     input:
         "bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.fq.gz"
     output:
-        temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split.fq.gz")
+        local(temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split.fq.gz"))
     threads:
         1
     shell:
@@ -136,7 +136,7 @@ rule split_um_fastq_r2:
     input:
         "bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.fq.gz"
     output:
-        temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split.fq.gz")
+        local(temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split.fq.gz"))
     threads:
         1
     shell:
@@ -149,8 +149,8 @@ rule bismark_split_r1:
     input:
         "bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split.fq.gz"
     output:
-        bam=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark.bam"),
-        stats=temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt")
+        bam=local(temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark.bam")),
+        stats=local(temp("bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt"))
     params:
         bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
@@ -166,8 +166,8 @@ rule bismark_split_r2:
     input:
         "bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split.fq.gz"
     output:
-        bam=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark.bam"),
-        stats=temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt")
+        bam=local(temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark.bam")),
+        stats=local(temp("bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt"))
     params:
         bam_dir=os.path.abspath("bam") if not gcp else workflow.default_remote_prefix+"/bam"
     threads:
@@ -185,7 +185,7 @@ rule merge_r1_raw_bam:
         "bam/{cell_id}-R1.trimmed_bismark.bam",
         "bam/{cell_id}-R1.trimmed.fq.gz_unmapped_reads.split_bismark.bam"
     output:
-        temp("bam/{cell_id}-R1.two_mapping.bam")
+        local(temp("bam/{cell_id}-R1.two_mapping.bam"))
     shell:
         "samtools merge -f {output} {input}"
 
@@ -194,7 +194,7 @@ rule merge_r2_raw_bam:
         "bam/{cell_id}-R2.trimmed_bismark.bam",
         "bam/{cell_id}-R2.trimmed.fq.gz_unmapped_reads.split_bismark.bam"
     output:
-        temp("bam/{cell_id}-R2.two_mapping.bam")
+        local(temp("bam/{cell_id}-R2.two_mapping.bam"))
     shell:
         "samtools merge -f {output} {input}"
 
@@ -204,7 +204,7 @@ rule filter_r1_bam:
     input:
         "bam/{cell_id}-R1.two_mapping.bam"
     output:
-        temp("bam/{cell_id}-R1.two_mapping.filter.bam")
+        local(temp("bam/{cell_id}-R1.two_mapping.filter.bam"))
     shell:
         "samtools view -b -h -q 10 -o {output} {input}"
 
@@ -212,7 +212,7 @@ rule filter_r2_bam:
     input:
         "bam/{cell_id}-R2.two_mapping.bam"
     output:
-        temp("bam/{cell_id}-R2.two_mapping.filter.bam")
+        local(temp("bam/{cell_id}-R2.two_mapping.filter.bam"))
     shell:
         "samtools view -b -h -q 10 -o {output} {input}"
 
@@ -221,7 +221,7 @@ rule sort_r1_bam:
     input:
         "bam/{cell_id}-R1.two_mapping.filter.bam"
     output:
-        temp("bam/{cell_id}-R1.two_mapping.sorted.bam")
+        local(temp("bam/{cell_id}-R1.two_mapping.sorted.bam"))
     resources:
         mem_mb=1000
     shell:
@@ -231,7 +231,7 @@ rule sort_r2_bam:
     input:
         "bam/{cell_id}-R2.two_mapping.filter.bam"
     output:
-        temp("bam/{cell_id}-R2.two_mapping.sorted.bam")
+        local(temp("bam/{cell_id}-R2.two_mapping.sorted.bam"))
     resources:
         mem_mb=1000
     shell:
@@ -242,8 +242,8 @@ rule dedup_r1_bam:
     input:
         "bam/{cell_id}-R1.two_mapping.sorted.bam"
     output:
-        bam=temp("bam/{cell_id}-R1.two_mapping.deduped.bam"),
-        stats=temp("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt")
+        bam=local(temp("bam/{cell_id}-R1.two_mapping.deduped.bam")),
+        stats=local(temp("bam/{cell_id}-R1.two_mapping.deduped.matrix.txt"))
     params:
         tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
@@ -256,8 +256,8 @@ rule dedup_r2_bam:
     input:
         "bam/{cell_id}-R2.two_mapping.sorted.bam"
     output:
-        bam=temp("bam/{cell_id}-R2.two_mapping.deduped.bam"),
-        stats=temp("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt")
+        bam=local(temp("bam/{cell_id}-R2.two_mapping.deduped.bam")),
+        stats=local(temp("bam/{cell_id}-R2.two_mapping.deduped.matrix.txt"))
     params:
         tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
@@ -272,8 +272,8 @@ rule merge_mc_bam:
         "bam/{cell_id}-R1.two_mapping.deduped.bam",
         "bam/{cell_id}-R2.two_mapping.deduped.bam"
     output:
-        bam=temp("bam/{cell_id}.mC.bam"),
-        bai=temp("bam/{cell_id}.mC.bam.bai")
+        bam=local(temp("bam/{cell_id}.mC.bam")),
+        bai=local(temp("bam/{cell_id}.mC.bam.bai"))
     shell:
         "samtools merge -f {output.bam} {input} && samtools index {output.bam}"
 
@@ -284,21 +284,24 @@ rule allc:
         index="bam/{cell_id}.mC.bam.bai"
     output:
         allc="allc/{cell_id}.allc.tsv.gz",
-        stats=temp("allc/{cell_id}.allc.tsv.gz.count.csv")
+        tbi="allc/{cell_id}.allc.tsv.gz.tbi",
+        stats=local(temp("allc/{cell_id}.allc.tsv.gz.count.csv"))
     threads:
         2
     resources:
         mem_mb=500
     shell:
-        'allcools bam-to-allc '
-        '--bam_path {input.bam} '
-        '--reference_fasta {reference_fasta} '
-        '--output_path {output.allc} '
-        '--cpu 1 '
-        '--num_upstr_bases {num_upstr_bases} '
-        '--num_downstr_bases {num_downstr_bases} '
-        '--compress_level {compress_level} '
-        '--save_count_df'
+        """
+        allcools bam-to-allc \
+                --bam_path {input.bam} \
+                --reference_fasta {reference_fasta} \
+                --output_path {output.allc} \
+                --cpu 1 \
+                --num_upstr_bases {num_upstr_bases} \
+                --num_downstr_bases {num_downstr_bases} \
+                --compress_level {compress_level} \
+                --save_count_df
+        """
 
 
 # merge and sort (by read name) bam before dedup for generating contact
@@ -308,7 +311,7 @@ rule merge_3c_bam_for_contact:
         "bam/{cell_id}-R1.two_mapping.sorted.bam",
         "bam/{cell_id}-R2.two_mapping.sorted.bam"
     output:
-        temp("bam/{cell_id}.3C.bam")
+        local(temp("bam/{cell_id}.3C.bam"))
     shell:
         "samtools merge -f {output} {input}"
 
@@ -327,7 +330,7 @@ rule generate_contact:
         "bam/{cell_id}.3C.sorted.bam"
     output:
         contact="hic/{cell_id}.3C.contact.tsv.gz",
-        stats=temp("hic/{cell_id}.3C.contact.tsv.counts.txt")
+        stats=local(temp("hic/{cell_id}.3C.contact.tsv.counts.txt"))
     resources:
         mem_mb=300
     shell:
