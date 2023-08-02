@@ -21,7 +21,14 @@ pip install git+https://github.com/DingWB/cemba_data
 ```shell
 git clone https://github.com/DingWB/cemba_data.git
 mamba env create -f cemba_data/env.yaml
+conda activate yap
 ```
+Or directly read from http:
+```shell
+mamba env create -f https://raw.githubusercontent.com/DingWB/cemba_data/master/env.yaml
+conda activate yap
+```
+
 ## 2. Generate config.ini
 ```shell
 yap default-mapping-config --mode m3c --barcode_version V2 --bismark_ref "~/Ref/hg38/hg38_ucsc_with_chrL.bismark1" \
@@ -52,7 +59,7 @@ snakemake --snakefile ~/sky_workdir/Snakefile -j 8 --default-resources mem_mb=10
 
 ### Run on GCP automatically
 ```shell
-yap gcp -o mapping -t m3c_skypilot_template.yaml
+yap update-snakemake -o mapping -t m3c_skypilot_template.yaml
 
 # spot
 sky spot launch -y mapping/snakemake/gcp/AMB_220510_8wk_12D_13B_2_P3-3-A11.yaml
