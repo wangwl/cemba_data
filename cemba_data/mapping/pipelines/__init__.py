@@ -162,18 +162,19 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
 
 def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, queue):
     output_dir_name = output_dir.name
+    outdir=str(output_dir)
     cmds = {}
     snake_files = list(output_dir.glob('*/Snakefile'))
     for snake_file in snake_files:
         uid = snake_file.parent.name
         cmd = f'snakemake ' \
-              f'-d $SCRATCH/{output_dir_name}/{snake_file.parent.name} ' \
-              f'--snakefile $SCRATCH/{output_dir_name}/{snake_file.parent.name}/Snakefile ' \
+              f'-d {outdir}/{snake_file.parent.name} ' \
+              f'--snakefile {outdir}/{snake_file.parent.name}/Snakefile ' \
               f'-j {cores_per_job} ' \
               f'--default-resources mem_mb=100 ' \
               f'--resources mem_mb={total_mem_mb} ' \
               f'--rerun-incomplete ' \
-              f'&& test -f "$SCRATCH/{output_dir_name}/{snake_file.parent.name}/MappingSummary.csv.gz"'
+              f'&& test -f "{outdir}/{snake_file.parent.name}/MappingSummary.csv.gz"'
         cmds[uid] = cmd
     script_path = script_dir / f'snakemake_{queue}_cmd.txt'
     with open(script_path, 'w') as f:
@@ -194,7 +195,7 @@ def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, q
             # uid_order file do not exist (when starting from cell FASTQs)
             for cmd in cmds.values():
                 f.write(cmd + '\n')
-    return f'$SCRATCH/{output_dir_name}/snakemake/sbatch/snakemake_{queue}_cmd.txt'
+    return f'{outdir}/snakemake/sbatch/snakemake_{queue}_cmd.txt'
 
 
 def prepare_qsub(name, snakemake_dir, total_jobs, cores_per_job, memory_gb_per_core):
@@ -242,6 +243,7 @@ yap qsub \
 def prepare_sbatch(name, snakemake_dir, queue):
     output_dir = snakemake_dir.parent
     output_dir_name = output_dir.name
+    outdir=str(output_dir)
     mode = get_configuration(output_dir / 'mapping_config.ini')['mode']
 
     if queue == 'skx-normal':
@@ -306,7 +308,7 @@ def prepare_sbatch(name, snakemake_dir, queue):
     sbatch_cmd = f'yap sbatch ' \
                  f'--project_name {name}_{queue} ' \
                  f'--command_file_path {script_path} ' \
-                 f'--working_dir $SCRATCH/{output_dir_name}/snakemake/sbatch ' \
+                 f'--working_dir {outdir}/snakemake/sbatch ' \
                  f'--time_str {time_str} ' \
                  f'--queue {queue}'
     sbatch_total_path = sbatch_dir / f'sbatch-{queue}-queue.sh'
@@ -326,7 +328,7 @@ def prepare_sbatch(name, snakemake_dir, queue):
           f"or change the global parameters in {sbatch_total_path}")
     print(f"Read 'yap sbatch -h' if you want to have more options about sbatch. "
           f"Alternatively, you can sbatch the commands in "
-          f"$SCRATCH/{output_dir_name}/snakemake/sbatch/sbatch.sh by yourself, "
+          f"{outdir}/snakemake/sbatch/sbatch.sh by yourself, "
           f"as long as they all get successfully executed.")
     print('#' * 40 + '\n')
     return
