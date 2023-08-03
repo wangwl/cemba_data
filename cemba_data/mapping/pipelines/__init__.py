@@ -305,12 +305,12 @@ def prepare_sbatch(name, snakemake_dir, queue):
                                         total_mem_mb=total_mem_mb,
                                         queue=queue)
     # the path here is using stampede path
-    sbatch_cmd = f'nohup yap sbatch ' \
+    sbatch_cmd = f'yap sbatch ' \
                  f'--project_name {name} ' \
                  f'--command_file_path {script_path} ' \
                  f'--working_dir {outdir}/snakemake/sbatch ' \
                  f'--time_str {time_str} ' \
-                 f'--queue {queue} &'
+                 f'--queue {queue}'
     sbatch_total_path = sbatch_dir / f'sbatch-{queue}-queue.sh'
     with open(sbatch_total_path, 'w') as f:
         f.write(sbatch_cmd)
