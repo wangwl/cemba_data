@@ -25,4 +25,4 @@ run: |
   # prefix="mapping_example/mapping/test/AMB_220510_8wk_12D_13B_2_P3-6-A11"
   snakemake -j 8 --default-resources mem_mb=100 \
           --resources mem_mb=50000 --config gcp=True --default-remote-prefix bucket_name/{outdir}/pool_name/{uid} \
-          --default-remote-provider GS --google-lifesciences-region us-west1
+          --default-remote-provider GS --google-lifesciences-region us-west1 --rerun-incomplete

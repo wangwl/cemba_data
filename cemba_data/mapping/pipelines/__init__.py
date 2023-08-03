@@ -338,19 +338,20 @@ def prepare_run(output_dir, total_jobs=12, cores_per_job=10, memory_gb_per_core=
         host_name = subprocess.run('hostname', stdout=subprocess.PIPE, encoding='utf8').stdout
         if not isinstance(host_name, str):
             host_name = 'unknown'
-    if any([host_name.startswith(s) for s in INHOUSE_SERVERS]):
-        prepare_qsub(name=name,
-                     snakemake_dir=snakemake_dir,
-                     total_jobs=total_jobs,
-                     cores_per_job=cores_per_job,
-                     memory_gb_per_core=memory_gb_per_core)
-        prepare_sbatch(name=name, snakemake_dir=snakemake_dir, queue='normal')
-        prepare_sbatch(name=name, snakemake_dir=snakemake_dir, queue='skx-normal')
-    else:
-        script_path = write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_dir=snakemake_dir)
-        print(f"All snakemake commands need to be executed were summarized in {script_path}")
-        print(f"You need to execute them based on the computational environment you have "
-              f"(e.g., use a job scheduler or run locally).")
+    # if any([host_name.startswith(s) for s in INHOUSE_SERVERS]):
+    prepare_qsub(name=name,
+                    snakemake_dir=snakemake_dir,
+                    total_jobs=total_jobs,
+                    cores_per_job=cores_per_job,
+                    memory_gb_per_core=memory_gb_per_core)
+    prepare_sbatch(name=name, snakemake_dir=snakemake_dir, queue='normal')
+    prepare_sbatch(name=name, snakemake_dir=snakemake_dir, queue='skx-normal')
+    prepare_sbatch(name=name, snakemake_dir=snakemake_dir, queue='shared')
+    # else:
+    #     script_path = write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_dir=snakemake_dir)
+    #     print(f"All snakemake commands need to be executed were summarized in {script_path}")
+    #     print(f"You need to execute them based on the computational environment you have "
+    #           f"(e.g., use a job scheduler or run locally).")
 
     print(f"Once all commands are executed successfully, use 'yap summary' to generate final mapping summary.")
     return
