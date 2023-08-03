@@ -22,6 +22,7 @@
 #SBATCH -o {log_dir}/{job_name}.o%j       # Name of stdout output file
 #SBATCH -e {log_dir}/{job_name}.e%j       # Name of stderr error file
 #SBATCH -p {queue}              # Queue (partition) name
+#SBATCH --mem 100G              # memory usage
 #SBATCH -N 1                    # Total # of nodes (must be 1 for OpenMP)
 #SBATCH -n 1                    # Total # of mpi tasks (should be 1 for OpenMP)
 #SBATCH -t {time_str}           # Run time (hh:mm:ss)
@@ -31,16 +32,16 @@
 
 #----------------------------------------------------
 # Clone the whole miniconda into /tmp so the snakemake command do not access $WORK
-mkdir /tmp/test_{env_dir_random}
-tar -xf /work2/05622/lhq/test_conda.tar -C /tmp/test_{env_dir_random}
-export CONDA_PREFIX=/tmp/test_{env_dir_random}/test/miniconda3
-export CONDA_PYTHON_EXE=/tmp/test_{env_dir_random}/test/miniconda3/bin/python
-export CONDA_EXE=/tmp/test_{env_dir_random}/test/miniconda3/bin/conda
-export PATH=/dev/shm/bin:/tmp/test_{env_dir_random}/test/miniconda3/envs/mapping/bin:/tmp/test_{env_dir_random}/test/miniconda3/bin:/opt/apps/cmake/3.16.1/bin:/opt/apps/intel18/python2/2.7.15/bin:/opt/apps/autotools/1.1/bin:/opt/apps/git/2.24.1/bin:/opt/apps/libfabric/1.7.0/bin:/opt/apps/intel18/impi/18.0.2/bin:/opt/intel/compilers_and_libraries_2018.2.199/linux/mpi/intel64/bin:/opt/intel/compilers_and_libraries_2018.2.199/linux/bin/intel64:/opt/apps/gcc/6.3.0/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/opt/dell/srvadmin/bin:.
-find /tmp/test_{env_dir_random}/test/miniconda3/ -type f -print0 | sed 's/ /\\ /g; s/(/\\(/g; s/)/\\)/g' | xargs -0 -P 30 -I % sh -c '/bin/sed -i "s/\/tmp\/test\/miniconda3\/envs\/mapping\/bin\/python/\/tmp\/test_{env_dir_random}\/test\/miniconda3\/envs\/mapping\/bin\/python/" %'
+# mkdir /tmp/test_{env_dir_random}
+# tar -xf /work2/05622/lhq/test_conda.tar -C /tmp/test_{env_dir_random}
+# export CONDA_PREFIX=/tmp/test_{env_dir_random}/test/miniconda3
+# export CONDA_PYTHON_EXE=/tmp/test_{env_dir_random}/test/miniconda3/bin/python
+# export CONDA_EXE=/tmp/test_{env_dir_random}/test/miniconda3/bin/conda
+# export PATH=/dev/shm/bin:/tmp/test_{env_dir_random}/test/miniconda3/envs/mapping/bin:/tmp/test_{env_dir_random}/test/miniconda3/bin:/opt/apps/cmake/3.16.1/bin:/opt/apps/intel18/python2/2.7.15/bin:/opt/apps/autotools/1.1/bin:/opt/apps/git/2.24.1/bin:/opt/apps/libfabric/1.7.0/bin:/opt/apps/intel18/impi/18.0.2/bin:/opt/intel/compilers_and_libraries_2018.2.199/linux/mpi/intel64/bin:/opt/intel/compilers_and_libraries_2018.2.199/linux/bin/intel64:/opt/apps/gcc/6.3.0/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/opt/dell/srvadmin/bin:.
+# ind /tmp/test_{env_dir_random}/test/miniconda3/ -type f -print0 | sed 's/ /\\ /g; s/(/\\(/g; s/)/\\)/g' | xargs -0 -P 30 -I % sh -c '/bin/sed -i "s/\/tmp\/test\/miniconda3\/envs\/mapping\/bin\/python/\/tmp\/test_{env_dir_random}\/test\/miniconda3\/envs\/mapping\/bin\/python/" %'
 
 # pip install cemba_data --upgrade
-pip install schicluster --upgrade
+# pip install schicluster --upgrade
 
 # Check the path
 which python
@@ -74,5 +75,5 @@ export OMP_NUM_THREADS=48
 
 # delete everything in /tmp
 
-rm -rf /tmp/test*
+# rm -rf /tmp/test*
 # ---------------------------------------------------

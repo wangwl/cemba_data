@@ -179,8 +179,8 @@ def sbatch_register_subparser(subparser):
     parser_req.add_argument(
         "--queue",
         type=str,
-        default='skx-normal',
-        help="Queue partition of stampede2. "
+        default='shared',
+        help="Queue partition of Anvil. "
              "See https://portal.tacc.utexas.edu/user-guides/stampede2#running-queues for more information."
     )
 

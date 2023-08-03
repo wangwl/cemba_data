@@ -28,7 +28,9 @@ STAMPEDE2_QUEUES = {
     'flat-quadrant': 5,
     'skx-dev': 1,
     'skx-normal': 20,
-    'skx-large': 3
+    'skx-large': 3,
+    'shared': 1000,
+    'wholenode': 1000
 }
 
 
@@ -254,7 +256,7 @@ def sacct(jobs):
     return sacct_data
 
 
-def sbatch_submitter(project_name, command_file_path, working_dir, time_str, queue='skx-normal',
+def sbatch_submitter(project_name, command_file_path, working_dir, time_str, queue='shared',
                      email=None, email_type='fail', max_jobs=None, dry_run=False, retry=2,
                      template='yap'):
     # read commands
