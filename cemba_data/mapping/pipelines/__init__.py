@@ -137,8 +137,8 @@ def write_gcp_skypolit_yaml(output_dir, template_path):
     except KeyError:
         raise KeyError('mode not found in the config file.')
     if template_path is None:
-        print("Using template: "+str(PACKAGE_DIR)+ f'/files/{mode}_skypilot_template.yaml')
-        with open(PACKAGE_DIR / f'files/{mode}_skypilot_template.yaml') as f:
+        print("Using template: "+str(PACKAGE_DIR)+ f'/files/skypilot_template.yaml')
+        with open(PACKAGE_DIR / f'files/skypilot_template.yaml') as f:
             template = f.read()
     else:
         with open(template_path) as f:
