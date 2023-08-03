@@ -278,7 +278,7 @@ def prepare_sbatch(name, snakemake_dir, queue):
             total_mem_mb = 112000
         else:
             raise KeyError(f'Unknown mode {mode}')
-    else # queue == 'shared':
+    else: # queue == 'shared':
         sbatch_cores_per_job = 64
         if mode == 'm3c':
             time_str = "48:00:00"
