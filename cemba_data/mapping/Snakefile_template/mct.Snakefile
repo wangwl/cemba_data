@@ -2,6 +2,25 @@
 # Snakemake rules below
 # suitable for snmCT-seq, snmC2T-seq (with NOMe treatment)
 
+if "gcp" in config:
+    gcp=config["gcp"] # if the fastq files stored in GCP cloud, set gcp=True in snakemake: --config gcp=True
+else:
+    gcp=False
+
+if gcp:
+    from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
+    GS = GSRemoteProvider()
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =os.path.expanduser('~/.config/gcloud/application_default_credentials.json')
+    bam_dir=workflow.default_remote_prefix+"/bam"
+    allc_dir=workflow.default_remote_prefix+"/allc"
+    hic_dir=workflow.default_remote_prefix+"/hic"
+else:
+    bam_dir="bam"
+    allc_dir="allc"
+    hic_dir="hic"
+
+fastq_dir=os.path.abspath("fastq")
+
 # the summary rule is the final target
 rule summary:
     input:
@@ -26,11 +45,15 @@ rule summary:
         'rna_bam/TotalRNAAligned.rna_reads.feature_count.tsv.summary'
     output:
         "MappingSummary.csv.gz"
+    params:
+        outdir=os.path.abspath("./") if not gcp else workflow.default_remote_prefix,
     shell:
-        "yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} --mode {mode} --barcode_version {barcode_version} \
+        """
+        yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} --mode {mode} --barcode_version {barcode_version} \
                     --mc_stat_feature "{mc_stat_feature}" --mc_stat_alias "{mc_stat_alias}" \
                     --num_upstr_bases {num_upstr_bases} --mc_rate_max_threshold {mc_rate_max_threshold} \
-                    --dna_cov_min_threshold {dna_cov_min_threshold}"
+                    --dna_cov_min_threshold {dna_cov_min_threshold}
+        """
 
 # Trim reads
 rule trim_r1:

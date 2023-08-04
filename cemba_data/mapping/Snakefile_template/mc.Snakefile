@@ -5,6 +5,25 @@
 # use diff mcg_context for normal mC or NOMe
 mcg_context = 'CGN' if num_upstr_bases == 0 else 'HCGN'
 
+if "gcp" in config:
+    gcp=config["gcp"] # if the fastq files stored in GCP cloud, set gcp=True in snakemake: --config gcp=True
+else:
+    gcp=False
+
+if gcp:
+    from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
+    GS = GSRemoteProvider()
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =os.path.expanduser('~/.config/gcloud/application_default_credentials.json')
+    bam_dir=workflow.default_remote_prefix+"/bam"
+    allc_dir=workflow.default_remote_prefix+"/allc"
+    hic_dir=workflow.default_remote_prefix+"/hic"
+else:
+    bam_dir="bam"
+    allc_dir="allc"
+    hic_dir="hic"
+
+fastq_dir=os.path.abspath("fastq")
+
 # the summary rule is the final target
 rule summary:
     input:
@@ -22,6 +41,8 @@ rule summary:
         expand("bam/{cell_id}-R2.trimmed_bismark_bt2_SE_report.txt", cell_id=CELL_IDS),
     output:
         "MappingSummary.csv.gz"
+    params:
+        outdir=os.path.abspath("./") if not gcp else workflow.default_remote_prefix,
     shell:
         """
         yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} \
