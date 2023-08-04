@@ -104,7 +104,7 @@ def write_qsub_commands(output_dir, cores_per_job, memory_gb_per_core, script_di
         cmd = f'snakemake ' \
               f'-d {snake_file.parent} ' \
               f'--snakefile {snake_file} ' \
-              f'-j {cores_per_job} ' \
+              f'-j {cores_per_job} --rerun-incomplete ' \
               f'--default-resources mem_mb=100 ' \
               f'--resources mem_mb={int(cores_per_job * memory_per_core)} '
         cmds[uid] = cmd
@@ -171,7 +171,7 @@ def write_sbatch_commands(output_dir, cores_per_job, script_dir, total_mem_mb, q
               f'-d {outdir}/{snake_file.parent.name} ' \
               f'--snakefile {outdir}/{snake_file.parent.name}/Snakefile ' \
               f'-j {cores_per_job} ' \
-              f'--default-resources mem_mb=100 ' \
+              f'--default-resources mem_mb=100 --rerun-incomplete ' \
               f'--resources mem_mb={total_mem_mb} ' \
               f'--rerun-incomplete ' \
               f'&& test -f "{outdir}/{snake_file.parent.name}/MappingSummary.csv.gz"'
