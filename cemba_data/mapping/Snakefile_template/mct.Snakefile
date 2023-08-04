@@ -29,7 +29,8 @@ rule summary:
     shell:
         "yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} --mode {mode} --barcode_version {barcode_version} \
                     --mc_stat_feature "{mc_stat_feature}" --mc_stat_alias "{mc_stat_alias}" \
-                    --num_upstr_bases {num_upstr_bases}"
+                    --num_upstr_bases {num_upstr_bases} --mc_rate_max_threshold {mc_rate_max_threshold} \
+                    --dna_cov_min_threshold {dna_cov_min_threshold}"
 
 # Trim reads
 rule trim_r1:
