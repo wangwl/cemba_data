@@ -23,9 +23,12 @@ rule summary:
     output:
         "MappingSummary.csv.gz"
     shell:
-        "yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} --mode {mode} --barcode_version {barcode_version} \
+        """
+        yap-internal summary --output_dir {params.outdir} --fastq_dir {fastq_dir} \
+                    --mode {mode} --barcode_version {barcode_version} \
                     --mc_stat_feature "{mc_stat_feature}" --mc_stat_alias "{mc_stat_alias}" \
-                    --num_upstr_bases {num_upstr_bases}"
+                    --num_upstr_bases {num_upstr_bases}
+        """
 
 # Trim reads
 rule trim_r1:
