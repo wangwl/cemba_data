@@ -498,6 +498,15 @@ def summary_register_subparser(subparser):
         default=None,
         help="Notebook template for mapping summary, if not provided, will use yap default template."
     )
+
+    parser_req.add_argument(
+        "--mode",
+        '-m',
+        type=str,
+        required=False,
+        default='m3c',
+        help="mode"
+    )
     return
 
 
