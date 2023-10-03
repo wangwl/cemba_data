@@ -19,7 +19,7 @@ pip install git+https://github.com/DingWB/cemba_data
 # Documentation
 ## 1. Make sure create the right environment
 ```shell
-git clone https://github.com/DingWB/cemba_data.git
+git clone https://github.com/wangwl/cemba_data.git
 mamba env create -f cemba_data/env.yaml
 conda activate yap
 ```
