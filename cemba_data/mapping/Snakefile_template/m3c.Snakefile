@@ -160,7 +160,7 @@ rule filter_bam:
         bam=local(temp("{sname}.filter.bam")),
     shell:
         """
-        samtools view -b -h -q 10 -o {output.bam} {input}
+        samtools view -b -h -o {output.bam} {input}
         """
 
 # sort bam by coords
