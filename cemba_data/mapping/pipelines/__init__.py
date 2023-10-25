@@ -389,14 +389,20 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
     r1_records = {}
     r2_records = {}
     for path in fastq_paths:
-        *cell_id, suffix = path.name.split('-')
-        cell_id = '-'.join(cell_id)
-        if suffix == 'R1.fq.gz':
+        *cell_id, fq, gz = path.name.split('.')
+        if fq not in ['fastq', 'fq']:
+            raise ValueError('only fq or fastq format accepted')
+        if gz != 'gz':
+            raise ValueError('fastq file should be gzipped with gz suffix')
+        cell_id = '.'.join(cell_id)
+        r1r2 = re.findall(r'(\w+)$', cell_id)[0]
+        cell_id = re.sub(f"(\W+){r1r2}", '', cell_id)
+        if '1' in r1r2:
             if cell_id in r1_records:
                 raise ValueError(f'Found duplicated cell ID: {cell_id}, '
                                  f'File caused this error: {path}')
             r1_records[cell_id] = path
-        elif suffix == 'R2.fq.gz':
+        elif '2' in r1r2:
             if cell_id in r2_records:
                 raise ValueError(f'Found duplicated cell ID: {cell_id}, '
                                  f'File caused this error: {path}')
