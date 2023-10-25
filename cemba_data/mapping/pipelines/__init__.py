@@ -91,8 +91,12 @@ def make_snakefile(output_dir,sky_template):
     print('Making Snakefile based on mapping config INI file. The parameters are:')
     print(config_str)
 
-    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
+    if 'hisat3n' in config_str:
+        with open(PACKAGE_DIR / f'hisat3n/snakefiles/{mode}.smk') as f:
             snake_template = f.read()
+    else:
+        with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
+                snake_template = f.read()
 
     for sub_dir in output_dir.iterdir():
         if sub_dir.is_dir():

@@ -488,7 +488,8 @@ def update_snakemake(output_dir,sky_template):
 
     if pathlib.Path(output_dir / 'snakemake/hisat3n').exists():
         # hisat3n pipeline
-        make_snakefile_hisat3n(output_dir=output_dir)
+        # make_snakefile_hisat3n(output_dir=output_dir)
+        make_snakefile(output_dir,sky_template)
     else:
         make_snakefile(output_dir,sky_template)
         prepare_run(output_dir)
