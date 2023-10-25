@@ -91,12 +91,8 @@ def make_snakefile(output_dir,sky_template):
     print('Making Snakefile based on mapping config INI file. The parameters are:')
     print(config_str)
 
-    if 'hisat3n' in config_str:
-        with open(PACKAGE_DIR / f'hisat3n/snakefile/{mode}.smk') as f:
-            snake_template = f.read()
-    else:
-        with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
-                snake_template = f.read()
+    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
+        snake_template = f.read()
 
     for sub_dir in output_dir.iterdir():
         if sub_dir.is_dir():
@@ -396,6 +392,7 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
     subprocess.run(['cp', config_path, f'{output_dir}/mapping_config.ini'], check=True)
     stats_dir = output_dir / 'stats'
     stats_dir.mkdir(exist_ok=True)
+    config = get_configuration(config_path)
 
     # parse fastq patterns
     fastq_paths = [pathlib.Path(p).absolute() for p in glob.glob(fastq_pattern)]
@@ -442,9 +439,9 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         new_r2_path.symlink_to(r2_path)
 
     # prepare scripts
-    # if aligner == 'hisat3n':
-    #     make_snakefile_hisat3n(output_dir)
-    # else:
-    make_snakefile(output_dir,sky_template)
+    if 'hisat3n_dna_reference' in config and 'bismark_reference' not in config:
+        make_snakefile_hisat3n(output_dir)
+    else:
+        make_snakefile(output_dir,sky_template)
     prepare_run(output_dir)
     return

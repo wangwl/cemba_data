@@ -41,6 +41,9 @@ DEFAULT_CONFIG = {
 }
 REQUIRED_CONFIG = ['hisat3n_dna_reference', 'reference_fasta', 'chrom_size_path']
 
+local_config = read_mapping_config()
+DEFAULT_CONFIG.update(local_config)
+
 for k, v in DEFAULT_CONFIG.items():
     if k not in config:
         config[k] = v
