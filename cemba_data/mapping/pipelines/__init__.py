@@ -92,7 +92,7 @@ def make_snakefile(output_dir,sky_template):
     print(config_str)
 
     if 'hisat3n' in config_str:
-        with open(PACKAGE_DIR / f'hisat3n/snakefiles/{mode}.smk') as f:
+        with open(PACKAGE_DIR / f'hisat3n/snakefile/{mode}.smk') as f:
             snake_template = f.read()
     else:
         with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
