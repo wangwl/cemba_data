@@ -396,8 +396,8 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         if gz != 'gz':
             raise ValueError('fastq file should be gzipped with gz suffix')
         cell_id = '.'.join(cell_id)
-        r1r2 = re.findall(r'(\w+)$', cell_id)[0]
-        cell_id = re.sub(f"(\W+){r1r2}", '', cell_id)
+        r1r2 = re.findall(r'[a-zA-Z0-9]+$', cell_id)[0]
+        cell_id = re.sub(f"[^a-zA-Z0-9]+{r1r2}$", '', cell_id)
         if '1' in r1r2:
             if cell_id in r1_records:
                 raise ValueError(f'Found duplicated cell ID: {cell_id}, '
