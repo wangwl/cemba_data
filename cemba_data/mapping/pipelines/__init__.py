@@ -11,6 +11,7 @@ from .mc import mc_config_str
 from .mct import mct_config_str
 from ._4m import _4m_config_str
 from ...utilities import get_configuration
+from ...hisat3n import make_snakefile_hisat3n
 
 # Load defaults
 PACKAGE_DIR = pathlib.Path(cemba_data.__path__[0])
@@ -69,7 +70,7 @@ def validate_mapping_config(output_dir):
     return
 
 
-def make_snakefile(output_dir,sky_template,aligner='hisat3n'):
+def make_snakefile(output_dir,sky_template):
     output_dir = pathlib.Path(output_dir).absolute()
     config = get_configuration(output_dir / 'mapping_config.ini')
     try:
@@ -90,11 +91,7 @@ def make_snakefile(output_dir,sky_template,aligner='hisat3n'):
     print('Making Snakefile based on mapping config INI file. The parameters are:')
     print(config_str)
 
-    if aligner == 'bismark':
-        with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
-            snake_template = f.read()
-    elif aligner == 'hisat3n':
-        with open(PACKAGE_DIR / f'hisat3n/snakefile/{mode}.smk') as f:
+    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
             snake_template = f.read()
 
     for sub_dir in output_dir.iterdir():
@@ -441,6 +438,9 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         new_r2_path.symlink_to(r2_path)
 
     # prepare scripts
-    make_snakefile(output_dir,sky_template, aligner=aligner)
+    if aligner == 'hisat3n':
+        make_snakefile_hisat3n(output_dir)
+    else:
+        make_snakefile(output_dir,sky_template)
     prepare_run(output_dir)
     return
