@@ -347,6 +347,14 @@ def update_snakemake_register_subparser(subparser):
     )
 
     parser_req.add_argument(
+        "--aligner",
+        type=str,
+        required=True,
+        choices=['bismark', 'hisat3n'],
+        help="Choice of aligner and corresponding mapping pipelines."
+    )
+
+    parser_req.add_argument(
         "--sky_template",
         "-t",
         type=str,
