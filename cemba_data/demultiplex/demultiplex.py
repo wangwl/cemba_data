@@ -481,14 +481,12 @@ def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner,sk
     return
 
 
-def update_snakemake(output_dir,sky_template):
+def update_snakemake(output_dir,sky_template, aligner):
     """When mapping_config.ini is updated, or the output_dir path changed,
     use this function to update snakefile and snakemake commands."""
     output_dir = pathlib.Path(output_dir).absolute()
 
-    config = get_configuration(output_dir / 'mapping_config.ini')
-
-    if 'hisat3n_dna_reference' in config and 'bismark_reference' not in config:
+    if aligner == 'hisat3n':
         make_snakefile_hisat3n(output_dir)
     else:
         make_snakefile(output_dir,sky_template)

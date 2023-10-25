@@ -384,7 +384,7 @@ def prepare_run(output_dir, total_jobs=12, cores_per_job=10, memory_gb_per_core=
     return
 
 
-def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None):
+def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None, aligner='hisat3n'):
     output_dir = pathlib.Path(output_dir).absolute()
     if output_dir.exists():
         raise FileExistsError(f'Output dir {output_dir} already exist, please delete it or use another path.')
@@ -439,7 +439,7 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         new_r2_path.symlink_to(r2_path)
 
     # prepare scripts
-    if 'hisat3n_dna_reference' in config and 'bismark_reference' not in config:
+    if aligner=='hisat3n':
         make_snakefile_hisat3n(output_dir)
     else:
         make_snakefile(output_dir,sky_template)
