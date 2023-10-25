@@ -28,7 +28,7 @@ def print_default_mapping_config(mode,
     if bismark_ref is not None:
         bismark_ref = bismark_ref #pathlib.Path(bismark_ref).absolute()
     else:
-        if hisat3n_rna_ref is None or hisat3n_dna_ref is None:
+        if hisat3n_rna_ref is None and hisat3n_dna_ref is None:
             raise ValueError('bismark_ref is required if hisat3n_rna_ref and hisat3n_dna_ref are not specified.')
         hisat3n_rna_ref = hisat3n_rna_ref #pathlib.Path(hisat3n_rna_ref).absolute()
         hisat3n_dna_ref = hisat3n_dna_ref #pathlib.Path(hisat3n_dna_ref).absolute()
