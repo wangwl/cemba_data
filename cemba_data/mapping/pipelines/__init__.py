@@ -69,7 +69,7 @@ def validate_mapping_config(output_dir):
     return
 
 
-def make_snakefile(output_dir,sky_template):
+def make_snakefile(output_dir,sky_template,aligner='hisat3n'):
     output_dir = pathlib.Path(output_dir).absolute()
     config = get_configuration(output_dir / 'mapping_config.ini')
     try:
@@ -90,8 +90,12 @@ def make_snakefile(output_dir,sky_template):
     print('Making Snakefile based on mapping config INI file. The parameters are:')
     print(config_str)
 
-    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
-        snake_template = f.read()
+    if aligner == 'bismark':
+        with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
+            snake_template = f.read()
+    elif aligner == 'hisat3n':
+        with open(PACKAGE_DIR / f'hisat3n/snakefile/{mode}.smk') as f:
+            snake_template = f.read()
 
     for sub_dir in output_dir.iterdir():
         if sub_dir.is_dir():
@@ -383,7 +387,7 @@ def prepare_run(output_dir, total_jobs=12, cores_per_job=10, memory_gb_per_core=
     return
 
 
-def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None):
+def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None, aligner='hisat3n'):
     output_dir = pathlib.Path(output_dir).absolute()
     if output_dir.exists():
         raise FileExistsError(f'Output dir {output_dir} already exist, please delete it or use another path.')
@@ -437,6 +441,6 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         new_r2_path.symlink_to(r2_path)
 
     # prepare scripts
-    make_snakefile(output_dir,sky_template)
+    make_snakefile(output_dir,sky_template, aligner=aligner)
     prepare_run(output_dir)
     return
