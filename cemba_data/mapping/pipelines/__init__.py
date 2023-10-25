@@ -25,6 +25,13 @@ INHOUSE_SERVERS = ['bpho', 'gale', 'cemba', 'oberon',
 
 def prepare_uid_snakefile(uid_dir, config_str, snake_template):
     cell_ids = [path.name.split('.')[0][:-3] for path in (uid_dir / 'fastq').glob('*R1.fq.gz')]
+    if len(cell_ids) == 0:
+        cell_ids = [path.name.split('.')[0] for path in (uid_dir / 'fastq').glob('*1.fastq.gz')]
+        cell_ids = [re.sub("[^a-zA-Z0-9]+1", '', x) for x in cell_ids]
+    
+    if len(cell_ids) == 0:
+        raise Exception('Check you fastq filenames')
+
     cell_id_str = f'CELL_IDS = {cell_ids}\n'
 
     # no file in this UID, do not make snakefile
