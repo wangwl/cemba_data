@@ -11,7 +11,7 @@ from .mc import mc_config_str
 from .mct import mct_config_str
 from ._4m import _4m_config_str
 from ...utilities import get_configuration
-from ...hisat3n import make_snakefile_hisat3n
+# from ...hisat3n import make_snakefile_hisat3n
 
 # Load defaults
 PACKAGE_DIR = pathlib.Path(cemba_data.__path__[0])
@@ -384,7 +384,7 @@ def prepare_run(output_dir, total_jobs=12, cores_per_job=10, memory_gb_per_core=
     return
 
 
-def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None, aligner='hisat3n'):
+def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=None):
     output_dir = pathlib.Path(output_dir).absolute()
     if output_dir.exists():
         raise FileExistsError(f'Output dir {output_dir} already exist, please delete it or use another path.')
@@ -438,9 +438,9 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
         new_r2_path.symlink_to(r2_path)
 
     # prepare scripts
-    if aligner == 'hisat3n':
-        make_snakefile_hisat3n(output_dir)
-    else:
-        make_snakefile(output_dir,sky_template)
+    # if aligner == 'hisat3n':
+    #     make_snakefile_hisat3n(output_dir)
+    # else:
+    make_snakefile(output_dir,sky_template)
     prepare_run(output_dir)
     return
