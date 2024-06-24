@@ -13,7 +13,7 @@
 # Install
 To install this latest version:
 ```shell
-pip install git+https://github.com/DingWB/cemba_data
+pip install git+https://github.com/wangwl/cemba_data
 ```
 
 # Documentation

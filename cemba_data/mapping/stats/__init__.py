@@ -410,7 +410,7 @@ def mapping_stats(output_dir=None,fastq_dir=None,mode='m3c',barcode_version='V2'
     return
 
 
-def final_summary(output_dir, cleanup=True, notebook=None,mode='m3c'):
+def final_summary(output_dir, cleanup=True, notebook=None,mode='mc'):
     output_dir = pathlib.Path(output_dir).absolute()
     path_to_remove = []
 
