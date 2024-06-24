@@ -108,7 +108,7 @@ rule bismark:
         # map R1 with --pbat mode; map R2 with normal SE mode
         """
         mkdir -p {bam_dir}
-        bismark {bowtie2_reference} -un --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
+        bismark {bismark_reference} -un --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
         """
 
 # split unmapped fastq
@@ -139,7 +139,7 @@ rule bismark_split:
         mem_mb=14000
     shell:
         """
-        bismark {bowtie2_reference} --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
+        bismark {bismark_reference} --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
         """
 
 # merge two bam files
