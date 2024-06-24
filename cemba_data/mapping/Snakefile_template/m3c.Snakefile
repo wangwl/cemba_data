@@ -199,7 +199,7 @@ rule merge_mc_bam:
         local(bam_dir+"/{cell_id}-R2.two_mapping.deduped.bam")
     output:
         bam=bam_dir+"/{cell_id}.mC.bam",
-        bai=bam_dir"/{cell_id}.mC.bam.bai"
+        bai=bam_dir+"/{cell_id}.mC.bam.bai"
     shell:
         "samtools merge -f {output.bam} {input} && samtools index {output.bam}"
 
