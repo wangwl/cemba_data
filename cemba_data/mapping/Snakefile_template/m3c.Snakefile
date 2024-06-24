@@ -198,16 +198,16 @@ rule merge_mc_bam:
         local(bam_dir+"/{cell_id}-R1.two_mapping.deduped.bam"),
         local(bam_dir+"/{cell_id}-R2.two_mapping.deduped.bam")
     output:
-        bam="{bam_dir}/{cell_id}.mC.bam",
-        bai="{bam_dir}/{cell_id}.mC.bam.bai"
+        bam=bam_dir+"/{cell_id}.mC.bam",
+        bai=bam_dir"/{cell_id}.mC.bam.bai"
     shell:
         "samtools merge -f {output.bam} {input} && samtools index {output.bam}"
 
 # generate ALLC
 rule allc:
     input:
-        bam="{bam_dir}/{cell_id}.mC.bam",
-        index="{bam_dir}/{cell_id}.mC.bam.bai"
+        bam=bam_dir+"/{cell_id}.mC.bam",
+        index=bam_dir+"/{cell_id}.mC.bam.bai"
     output:
         allc="{indir}/{cell_id}.allc.tsv.gz",
         tbi="{indir}/{cell_id}.allc.tsv.gz.tbi",
