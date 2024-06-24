@@ -95,9 +95,9 @@ rule bismark:
     input:
         local("fastq/{cell_id}-{read_type}.trimmed.fq.gz")
     output:
-        bam=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark.bam")),
+        bam=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark_bt2.bam")),
         um=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.fq.gz")),
-        stats=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark_SE_report.txt"))
+        stats=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark_bt2_SE_report.txt"))
     params:
         mode=lambda wildcards: "--pbat" if wildcards.read_type=="R1" else ""
     threads:
@@ -108,7 +108,7 @@ rule bismark:
         # map R1 with --pbat mode; map R2 with normal SE mode
         """
         mkdir -p {bam_dir}
-        bismark {bismark_reference} -un --bowtie1 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
+        bismark {bowtie2_reference} -un --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
         """
 
 # split unmapped fastq
@@ -129,8 +129,8 @@ rule bismark_split:
     input:
         local(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split.fq.gz")
     output:
-        bam=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark.bam")),
-        stats=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark_SE_report.txt"))
+        bam=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark_bt2.bam")),
+        stats=local(temp(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark_bt2_SE_report.txt"))
     params:
         mode=lambda wildcards: "--pbat" if wildcards.read_type=="R1" else ""
     threads:
@@ -139,14 +139,14 @@ rule bismark_split:
         mem_mb=14000
     shell:
         """
-        bismark {bismark_reference} --bowtie1 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
+        bismark {bowtie2_reference} --bowtie2 {input} {params.mode} -o {bam_dir} --temp_dir {bam_dir}
         """
 
 # merge two bam files
 rule merge_raw_bam:
     input:
-        local(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark.bam"),
-        local(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark.bam")
+        local(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark_bt2.bam"),
+        local(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark_bt2.bam")
     output:
         local(temp("{indir}/{cell_id}-{read_type}.two_mapping.bam"))
     shell:
@@ -198,16 +198,16 @@ rule merge_mc_bam:
         local(bam_dir+"/{cell_id}-R1.two_mapping.deduped.bam"),
         local(bam_dir+"/{cell_id}-R2.two_mapping.deduped.bam")
     output:
-        bam=local(temp(bam_dir+"/{cell_id}.mC.bam")),
-        bai=local(temp(bam_dir+"/{cell_id}.mC.bam.bai"))
+        bam="{bam_dir}/{cell_id}.mC.bam",
+        bai="{bam_dir}/{cell_id}.mC.bam.bai"
     shell:
         "samtools merge -f {output.bam} {input} && samtools index {output.bam}"
 
 # generate ALLC
 rule allc:
     input:
-        bam=local(bam_dir+"/{cell_id}.mC.bam"),
-        index=local(bam_dir+"/{cell_id}.mC.bam.bai")
+        bam="{bam_dir}/{cell_id}.mC.bam",
+        index="{bam_dir}/{cell_id}.mC.bam.bai"
     output:
         allc="{indir}/{cell_id}.allc.tsv.gz",
         tbi="{indir}/{cell_id}.allc.tsv.gz.tbi",
