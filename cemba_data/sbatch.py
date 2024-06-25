@@ -179,7 +179,7 @@ def squeue(partition):
         return squeue_df, total_job
 
 
-def make_sbatch_script_files(commands, sbatch_dir, name_prefix, queue, time_str, email, email_type, template='yap'):
+def make_sbatch_script_files(commands, sbatch_dir, name_prefix, queue, time_str, email, email_type, template='yap', memG=100):
     """See stampede2 doc: https://portal.tacc.utexas.edu/user-guides/stampede2#running-sbatch"""
     if template == 'yap':
         with open(PACKAGE_DIR / 'files/sbatch_template_yap.txt') as f:
@@ -206,6 +206,7 @@ def make_sbatch_script_files(commands, sbatch_dir, name_prefix, queue, time_str,
         sbatch_script = sbatch_template.format(
             job_name=job_name,
             queue=queue,
+            memG=memG,
             time_str=time_str,
             email_str=email_str,
             email_type_str=email_type_str,
@@ -258,7 +259,7 @@ def sacct(jobs):
 
 def sbatch_submitter(project_name, command_file_path, working_dir, time_str, queue='shared',
                      email=None, email_type='fail', max_jobs=None, dry_run=False, retry=2,
-                     template='yap'):
+                     template='yap', memG=100):
     # read commands
     with open(command_file_path) as f:
         # I always assume the command is ordered with descending priority.
@@ -307,7 +308,8 @@ def sbatch_submitter(project_name, command_file_path, working_dir, time_str, que
         time_str=time_str,
         email=email,
         email_type=email_type,
-        template=template
+        template=template,
+        memG=memG
     )
 
     # prepare submission
