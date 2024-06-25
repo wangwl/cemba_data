@@ -495,6 +495,14 @@ def start_from_cell_fastq_register_subparser(subparser):
         required=True,
         help="Path pattern with wildcard to match all cell-level FASTQ files, pattern with wildcard must be quoted."
     )
+
+    parser_req.add_argument(
+        "--ncell",
+        "-ncell",
+        type=int,
+        default=200,
+        help="Number of cells in each group."
+    )
     return
 
 
