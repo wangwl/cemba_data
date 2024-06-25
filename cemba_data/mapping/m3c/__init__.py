@@ -79,7 +79,7 @@ def _parse_bam(bam_path, output_path):
         if '_' in line[0]:
             _id = line[0].split('_')[0]
             if line[0].startswith("SRR") and '/' in line[0]:
-                split_st = line[0].split('_')[1].split('/')[1]
+                split_st = line[0].split('_')[1].split('/')[1][0]
             else:
                 split_st = line[0].split('_')[1].split(':')[0]
             if line[0][-2:] == '-l':
