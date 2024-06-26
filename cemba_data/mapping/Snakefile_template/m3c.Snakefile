@@ -194,7 +194,6 @@ rule sort_bam:
     output:
         bam=bam_dir+"/{cell_id}.m3C.sorted.bam",
         bai=bam_dir+"/{cell_id}.m3C.sorted.bam.bai",
-        nsort_bam=bam_dir+"/{cell_id}.m3C.nsorted.bam",
     shell:
         """
         samtools sort -@ 20 -o {ouptut.bam} {input} && samtools index -@ 20 {output.bam}
