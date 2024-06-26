@@ -175,7 +175,7 @@ def _parse_split_table(input_path, output_path, chrom_size_path, min_gap=2500):
 
 
 def mark_duplicates(bam_path, output_path):
-    bam_fh = pysam.AlignmentFile(bam_path, 'rb')
+    bam_fh = pysam.AlignmentFile(bam_path, 'rb', threads=20)
     out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
    
     # from split table to contacts
