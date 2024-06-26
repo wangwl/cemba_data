@@ -211,8 +211,9 @@ def mark_duplicates(bam_path, output_path):
                 else:
                     strand = 0
             if _id != pre_id:
-                if locs not in uniq_locs:
-                    uniq_locs.update(locs)
+                loc_key = '\t'.join(locs)
+                if loc_key not in uniq_locs:
+                    uniq_locs.update(loc_key)
                     for se in uniq_reads:
                         out_fh.write(se)
                         
@@ -229,8 +230,9 @@ def mark_duplicates(bam_path, output_path):
                 locs[split_dict[split_st]] = f'0:' \
                                              f'{dfh.get_reference_name(read.reference_id)}:' \
                                              f'{str(read.pos + len(line[9]))}'
-    if locs not in uniq_locs:
-        uniq_locs.update(locs)
+    loc_key = '\t'.join(locs)
+    if loc_key not in uniq_locs:
+        uniq_locs.update(loc_key)
         for se in uniq_reads:
             out_fh.write(se)
     bam_fh.close()
