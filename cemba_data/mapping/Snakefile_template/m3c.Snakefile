@@ -44,26 +44,12 @@ rule summary:
         expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
         local(expand("fastq/{cell_id}-{read_type}.trimmed.stats.tsv", 
                         cell_id=CELL_IDS,read_type=['R1','R2'])),
-        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.deduped.matrix.txt", 
-                        cell_id=CELL_IDS,read_type=['R1','R2'])),
-        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.filter.bam", 
-                        cell_id=CELL_IDS,read_type=['R1','R2'])),
-        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.deduped.bam", 
-                        cell_id=CELL_IDS,read_type=['R1','R2'])),
+        local(expand(bam_dir+"/{cell_id}.m3C.dedup.bam", 
+                        cell_id=CELL_IDS)),
+        expand(bam_dir+"/{cell_id}.m3C.sorted.bam", 
+                        cell_id=CELL_IDS),
         expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
         expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
-
-        #expand("allc/{cell_id}.allc.tsv.gz", cell_id=CELL_IDS),
-        # also add all the stats path here, so they won't be deleted until summary is generated
-        #expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
-        #local(expand("fastq/{cell_id}-{read_type}.trimmed.stats.tsv", 
-        #                cell_id=CELL_IDS,read_type=['R1','R2'])),
-        #local(expand(bam_dir+"/{cell_id}-{read_type}.m3C.deduped.bam", 
-        #                cell_id=CELL_IDS,read_type=['R1','R2'])),
-        #expand(bam_dir+"/{cell_id}-{read_type}.m3C.sorted.bam", 
-        #                cell_id=CELL_IDS,read_type=['R1','R2']),
-        #expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
-        #expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
     output:
         "MappingSummary.csv.gz"
     params:
@@ -160,16 +146,16 @@ rule merge_raw_bam:
         local(bam_dir+"/{cell_id}-{read_type}.trimmed_bismark_bt2.bam"),
         local(bam_dir+"/{cell_id}-{read_type}.trimmed.fq.gz_unmapped_reads.split_bismark_bt2.bam")
     output:
-        local(temp("{indir}/{cell_id}-{read_type}.two_mapping.bam"))
+        local(temp("{bam_dir}/{cell_id}-{read_type}.two_mapping.bam"))
     shell:
         "samtools merge -f {output} {input}"
 
 # filter bam
 rule filter_bam:
     input:
-        local("{sname}.bam")
+        local("{bam_dir}/{cell_id}-{read_type}.two_mapping.bam")
     output:
-        bam=local(temp("{sname}.filter.bam")),
+        bam=local(temp("{bam_dir}/{cell_id}-{read_type}.two_mapping.filter.bam")),
     shell:
         """
         samtools view -q 10 -b -h -o {output.bam} {input}
@@ -178,8 +164,8 @@ rule filter_bam:
 # merge R1 and R2, get final bam for mC calling
 rule merge_mc_bam:
     input:
-        local(bam_dir+"/{cell_id}-R1.two_mapping.bam"),
-        local(bam_dir+"/{cell_id}-R2.two_mapping.bam")
+        local(bam_dir+"/{cell_id}-R1.two_mapping.filter.bam"),
+        local(bam_dir+"/{cell_id}-R2.two_mapping.filter.bam")
     output:
         bam=local(temp(bam_dir+"/{cell_id}.m3C.bam")),
     shell:
