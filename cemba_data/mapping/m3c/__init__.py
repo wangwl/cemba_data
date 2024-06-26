@@ -233,6 +233,8 @@ def mark_duplicates(bam_path, output_path):
         uniq_locs.update(locs)
         for se in uniq_reads:
             out_fh.write(se)
+    bam_fh.close()
+    out_fh.close()
     return
 
 
