@@ -213,7 +213,7 @@ def mark_duplicates(bam_path, output_path):
             if _id != pre_id:
                 loc_key = '\t'.join(locs)
                 if loc_key not in uniq_locs:
-                    uniq_locs[uniq_locs] = 1
+                    uniq_locs[loc_key] = 1
                     for se in uniq_reads:
                         out_fh.write(se)
                         
