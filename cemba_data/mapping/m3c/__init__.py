@@ -184,7 +184,7 @@ def mark_duplicates(bam_path, output_path):
     pre_id = ''
     locs = ['' for _ in range(len(splits))]
 
-    uniq_locs = {}
+    uniq_locs = dict()
     uniq_reads = []
     for read in bam_fh:
         line = str(read).split()
@@ -213,7 +213,7 @@ def mark_duplicates(bam_path, output_path):
             if _id != pre_id:
                 loc_key = '\t'.join(locs)
                 if loc_key not in uniq_locs:
-                    uniq_locs.update(loc_key)
+                    uniq_locs[uniq_locs] = 1
                     for se in uniq_reads:
                         out_fh.write(se)
                         
@@ -232,7 +232,7 @@ def mark_duplicates(bam_path, output_path):
                                              f'{str(read.pos + len(line[9]))}'
     loc_key = '\t'.join(locs)
     if loc_key not in uniq_locs:
-        uniq_locs.update(loc_key)
+        uniq_locs[loc_key] = 1
         for se in uniq_reads:
             out_fh.write(se)
     bam_fh.close()
