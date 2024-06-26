@@ -224,11 +224,11 @@ def mark_duplicates(bam_path, output_path):
                 uniq_reads.append(read)
             if strand == 1:
                 locs[split_dict[split_st]] = f'1:' \
-                                             f'{dfh.get_reference_name(read.reference_id)}:' \
+                                             f'{bam_fh.get_reference_name(read.reference_id)}:' \
                                              f'{str(read.pos + 1)}'
             if strand == 0:
                 locs[split_dict[split_st]] = f'0:' \
-                                             f'{dfh.get_reference_name(read.reference_id)}:' \
+                                             f'{bam_fh.get_reference_name(read.reference_id)}:' \
                                              f'{str(read.pos + len(line[9]))}'
     loc_key = '\t'.join(locs)
     if loc_key not in uniq_locs:
