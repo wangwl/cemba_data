@@ -44,12 +44,26 @@ rule summary:
         expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
         local(expand("fastq/{cell_id}-{read_type}.trimmed.stats.tsv", 
                         cell_id=CELL_IDS,read_type=['R1','R2'])),
-        local(expand(bam_dir+"/{cell_id}-{read_type}.m3C.deduped.bam", 
+        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.deduped.matrix.txt", 
                         cell_id=CELL_IDS,read_type=['R1','R2'])),
-        expand(bam_dir+"/{cell_id}-{read_type}.m3C.sorted.bam", 
-                        cell_id=CELL_IDS,read_type=['R1','R2']),
+        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.filter.bam", 
+                        cell_id=CELL_IDS,read_type=['R1','R2'])),
+        local(expand(bam_dir+"/{cell_id}-{read_type}.two_mapping.deduped.bam", 
+                        cell_id=CELL_IDS,read_type=['R1','R2'])),
         expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
         expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
+        
+        #expand("allc/{cell_id}.allc.tsv.gz", cell_id=CELL_IDS),
+        # also add all the stats path here, so they won't be deleted until summary is generated
+        #expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
+        #local(expand("fastq/{cell_id}-{read_type}.trimmed.stats.tsv", 
+        #                cell_id=CELL_IDS,read_type=['R1','R2'])),
+        #local(expand(bam_dir+"/{cell_id}-{read_type}.m3C.deduped.bam", 
+        #                cell_id=CELL_IDS,read_type=['R1','R2'])),
+        #expand(bam_dir+"/{cell_id}-{read_type}.m3C.sorted.bam", 
+        #                cell_id=CELL_IDS,read_type=['R1','R2']),
+        #expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
+        #expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
     output:
         "MappingSummary.csv.gz"
     params:
