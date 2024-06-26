@@ -342,6 +342,28 @@ def split_read_internal_subparser(subparser):
     )
 
 
+def mark_duplicates_internal_subparser(subparser):
+    parser = subparser.add_parser('mark-duplicates',
+                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                  help="parse ")
+
+    parser_req = parser.add_argument_group("Required inputs")
+
+    parser_req.add_argument(
+        "--bam_path",
+        type=str,
+        required=True,
+        help="Input bam path"
+    )
+
+    parser_req.add_argument(
+        "--output_path",
+        type=str,
+        required=True,
+        help="Output contact file path"
+    )
+
+
 def generate_contacts_internal_subparser(subparser):
     parser = subparser.add_parser('generate-contacts',
                                   formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -674,6 +696,8 @@ def internal_main():
         from .mapping.m3c import split_fastq_reads as func
     elif cur_command == 'generate-contacts':
         from .mapping.m3c import generate_contacts as func
+    elif cur_command == 'mark-duplicates':
+        from .mapping.m3c import mark_duplicates as func
     elif cur_command == 'dss-two':
         from .dmr.dss import run_dss_two_group as func
     elif cur_command == 'dss-multi':

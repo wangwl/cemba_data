@@ -36,7 +36,7 @@ else:
 
 fastq_dir=os.path.abspath("fastq")
 
-# the summary rule is the final target
+# the sort_bam rule is the final target
 rule summary:
     input:
         expand("allc/{cell_id}.allc.tsv.gz", cell_id=CELL_IDS),
@@ -152,95 +152,15 @@ rule merge_raw_bam:
     shell:
         "samtools merge -f {output} {input}"
 
-# filter bam
-rule filter_bam:
+
+# merge and sort (by read name) bam before dedup for generating contact
+# contact dedup happen within generate contact
+rule merge_3c_bam_for_contact:
     input:
-        local("{sname}.bam")
+        local(bam_dir+"/{cell_id}-R1.two_mapping.sorted.bam"),
+        local(bam_dir+"/{cell_id}-R2.two_mapping.sorted.bam")
     output:
-        bam=local(temp("{sname}.filter.bam")),
+        local(temp(bam_dir+"/{cell_id}.3C.bam"))
     shell:
-        """
-        samtools view -q 10 -b -h -o {output.bam} {input}
-        """
+        "samtools merge -f {output} {input}"
 
-# merge R1 and R2, get final bam for mC calling
-rule merge_mc_bam:
-    input:
-        local(bam_dir+"/{cell_id}-R1.two_mapping.bam"),
-        local(bam_dir+"/{cell_id}-R2.two_mapping.bam")
-    output:
-        bam=local(temp(bam_dir+"/{cell_id}.m3C.bam")),
-    shell:
-        "samtools merge -f {output.bam} {input} && samtools sort -n -o {output.bam} {output.bam}"
-
-
-# remove PCR duplicates
-rule dedup_bam:
-    input:
-        local(bam_dir+"/{cell_id}.m3C.bam")
-    output:
-        bam=local(temp(bam_dir+"/{cell_id}.m3C.dedup.bam")),
-    params:
-        tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
-    resources:
-        mem_mb=1000
-    shell:
-        """
-         yap-internal mark-duplicates --bam_path {input} --output_path {output}
-        """
-
-
-rule sort_bam:
-    input:
-        local("bam_dir+"/{cell_id}.m3C.dedup.bam")
-    output:
-        bam=bam_dir+"/{cell_id}.m3C.sorted.bam",
-        bai=bam_dir+"/{cell_id}.m3C.sorted.bam.bai",
-        nsort_bam=bam_dir+"/{cell_id}.m3C.nsorted.bam",
-    shell:
-        """
-        samtools sort -@ 20 -o {ouptut.bam} {input} && samtools index -@ 20 {output.bam}
-        """
-
-
-# generate ALLC
-rule allc:
-    input:
-        bam=bam_dir+"/{cell_id}.m3C.bam",
-        index=bam_dir+"/{cell_id}.m3C.bam.bai"
-    output:
-        allc="{indir}/{cell_id}.allc.tsv.gz",
-        tbi="{indir}/{cell_id}.allc.tsv.gz.tbi",
-        stats="{indir}/{cell_id}.allc.tsv.gz.count.csv"
-    threads:
-        2
-    resources:
-        mem_mb=500
-    shell:
-        """
-        mkdir -p {allc_dir}
-        allcools bam-to-allc \
-                --bam_path {input.bam} \
-                --reference_fasta {reference_fasta} \
-                --output_path {output.allc} \
-                --cpu 1 \
-                --num_upstr_bases {num_upstr_bases} \
-                --num_downstr_bases {num_downstr_bases} \
-                --compress_level {compress_level} \
-                --save_count_df
-        """
-
-rule generate_contact:
-    input:
-       local("bam_dir+"/{cell_id}.m3C.dedup.bam"),
-    output:
-        contact="{indir}/{cell_id}.3C.contact.tsv.gz",
-        stats="{indir}/{cell_id}.3C.contact.tsv.counts.txt"
-    resources:
-        mem_mb=300
-    shell:
-        """
-        mkdir -p {hic_dir}
-        yap-internal generate-contacts --bam_path {input} --output_path {output.contact} \
-                    --chrom_size_path {chrom_size_path} --min_gap {min_gap}
-        """

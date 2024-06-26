@@ -174,6 +174,68 @@ def _parse_split_table(input_path, output_path, chrom_size_path, min_gap=2500):
     return output_path
 
 
+def mark_duplicates(bam_path, output_path):
+    bam_fh = pysam.AlignmentFile(bam_path, 'rb')
+    out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
+   
+    # from split table to contacts
+    splits = ['1', '1-1', '1-3', '1-2', '2-2', '2-3', '2-1', '2']
+    split_dict = {x: i for i, x in enumerate(splits)}
+    pre_id = ''
+    locs = ['' for _ in range(len(splits))]
+
+    uniq_locs = {}
+    uniq_reads = []
+    for read in bam_fh:
+        line = str(read).split()
+        if '_' in line[0]:
+            _id = line[0].split('_')[0]
+            if line[0].startswith("SRR") and '/' in line[0]:
+                split_st = line[0].split('_')[1].split('/')[1][0]
+            else:
+                split_st = line[0].split('_')[1].split(':')[0]
+            if line[0][-2:] == '-l':
+                split_st += '-1'
+            elif line[0][-2:] == '-r':
+                split_st += '-2'
+            elif line[0][-2:] == '-m':
+                split_st += '-3'
+            if read.flag & 16:
+                if split_st.split('-')[0] == '1':
+                    strand = 0
+                else:
+                    strand = 1
+            else:
+                if split_st.split('-')[0] == '1':
+                    strand = 1
+                else:
+                    strand = 0
+            if _id != pre_id:
+                if locs not in uniq_locs:
+                    uniq_locs.update(locs)
+                    for se in uniq_reads:
+                        out_fh.write(se)
+                        
+                pre_id = _id
+                uniq_reads = [read]
+                locs = ['' for _ in range(len(splits))]
+            else:
+                uniq_reads.append(read)
+            if strand == 1:
+                locs[split_dict[split_st]] = f'1:' \
+                                             f'{dfh.get_reference_name(read.reference_id)}:' \
+                                             f'{str(read.pos + 1)}'
+            if strand == 0:
+                locs[split_dict[split_st]] = f'0:' \
+                                             f'{dfh.get_reference_name(read.reference_id)}:' \
+                                             f'{str(read.pos + len(line[9]))}'
+    if locs not in uniq_locs:
+        uniq_locs.update(locs)
+        for se in uniq_reads:
+            out_fh.write(se)
+    return
+
+
 def generate_contacts(bam_path, output_path, chrom_size_path, min_gap=2500, keep_split_table=False):
     split_table_path = f'{output_path}.split.tsv'
 
