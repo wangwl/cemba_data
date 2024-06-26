@@ -52,7 +52,7 @@ rule summary:
                         cell_id=CELL_IDS,read_type=['R1','R2'])),
         expand("hic/{cell_id}.3C.contact.tsv.gz", cell_id=CELL_IDS),
         expand("hic/{cell_id}.3C.contact.tsv.counts.txt", cell_id=CELL_IDS)
-        
+
         #expand("allc/{cell_id}.allc.tsv.gz", cell_id=CELL_IDS),
         # also add all the stats path here, so they won't be deleted until summary is generated
         #expand("allc/{cell_id}.allc.tsv.gz.count.csv", cell_id=CELL_IDS),
@@ -204,7 +204,7 @@ rule dedup_bam:
 
 rule sort_bam:
     input:
-        local("bam_dir+"/{cell_id}.m3C.dedup.bam")
+        local(bam_dir+"/{cell_id}.m3C.dedup.bam")
     output:
         bam=bam_dir+"/{cell_id}.m3C.sorted.bam",
         bai=bam_dir+"/{cell_id}.m3C.sorted.bam.bai",
@@ -217,8 +217,8 @@ rule sort_bam:
 # generate ALLC
 rule allc:
     input:
-        bam=bam_dir+"/{cell_id}.m3C.bam",
-        index=bam_dir+"/{cell_id}.m3C.bam.bai"
+        bam=bam_dir+"/{cell_id}.m3C.sorted.bam",
+        index=bam_dir+"/{cell_id}.m3C.sorted.bam.bai"
     output:
         allc="{indir}/{cell_id}.allc.tsv.gz",
         tbi="{indir}/{cell_id}.allc.tsv.gz.tbi",
@@ -243,7 +243,7 @@ rule allc:
 
 rule generate_contact:
     input:
-       local("bam_dir+"/{cell_id}.m3C.dedup.bam"),
+       local(bam_dir+"/{cell_id}.m3C.dedup.bam"),
     output:
         contact="{indir}/{cell_id}.3C.contact.tsv.gz",
         stats="{indir}/{cell_id}.3C.contact.tsv.counts.txt"
