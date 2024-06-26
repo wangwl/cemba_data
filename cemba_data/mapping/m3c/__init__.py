@@ -113,8 +113,8 @@ def _parse_bam(bam_path, output_path):
     _output(rfh, tot1, tot2, pre_id, locs)
     rfh.close()
 
-    cmd = f'sort -k2 -u {output_path} -o {output_path}'
-    subprocess.run(cmd, shell=True, check=True)
+    # cmd = f'sort -k2 -u {output_path} -o {output_path}'
+    # subprocess.run(cmd, shell=True, check=True)
     return output_path
 
 
