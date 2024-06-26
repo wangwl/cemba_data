@@ -202,14 +202,14 @@ def mark_duplicates(bam_path, output_path):
                 split_st += '-3'
             if read.flag & 16:
                 if split_st.split('-')[0] == '1':
-                    strand = 0
+                    strand = 'GA+'
                 else:
-                    strand = 1
+                    strand = 'GA-'
             else:
                 if split_st.split('-')[0] == '1':
-                    strand = 1
+                    strand = 'CT-'
                 else:
-                    strand = 0
+                    strand = 'CT+'
             if _id != pre_id:
                 loc_key = '\t'.join(locs)
                 if loc_key not in uniq_locs:
@@ -222,14 +222,14 @@ def mark_duplicates(bam_path, output_path):
                 locs = ['' for _ in range(len(splits))]
             else:
                 uniq_reads.append(read)
-            if strand == 1:
-                locs[split_dict[split_st]] = f'1:' \
-                                             f'{bam_fh.get_reference_name(read.reference_id)}:' \
-                                             f'{str(read.pos + 1)}'
-            if strand == 0:
-                locs[split_dict[split_st]] = f'0:' \
-                                             f'{bam_fh.get_reference_name(read.reference_id)}:' \
-                                             f'{str(read.pos + len(line[9]))}'
+            # if strand == 1:
+            locs[split_dict[split_st]] = f'{strand}:' \
+                                            f'{bam_fh.get_reference_name(read.reference_id)}:' \
+                                            f'{str(read.pos + 1)}'
+            # if strand == 0:
+            #     locs[split_dict[split_st]] = f'0:' \
+            #                                  f'{bam_fh.get_reference_name(read.reference_id)}:' \
+            #                                  f'{str(read.pos + len(line[9]))}'
     loc_key = '\t'.join(locs)
     if loc_key not in uniq_locs:
         uniq_locs[loc_key] = 1
