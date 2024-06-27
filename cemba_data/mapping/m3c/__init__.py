@@ -228,12 +228,12 @@ def mark_duplicates(bam_path, output_path):
                 locs = [''] * len(splits)
             else:
                 # uniq_reads.append(read)
-                uniq_reads.append(line[0])
+                uniq_reads.append(qname)
             # if strand == 1:
             locs[split_dict[split_st]] = f'{strand}:' \
-                                            f'{bam_fh.get_reference_name(read.reference_id)}:' \
+                                            f'{read.reference_name}:' \
                                             f'{str(read.pos + 1)}:' \
-                                            f'{len(line[9])}'
+                                            f'{read.template_length}'
     loc_key = '\t'.join(locs)
     if loc_key not in uniq_locs:
         uniq_locs[loc_key] = 1
