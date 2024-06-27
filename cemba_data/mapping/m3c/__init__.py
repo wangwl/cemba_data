@@ -175,10 +175,10 @@ def _parse_split_table(input_path, output_path, chrom_size_path, min_gap=2500):
     return output_path
 
 
-def mark_duplicates(bam_path, output_path, tmp_dir=os.getcwd()):
+def mark_duplicates(bam_path, output_path):
     bam_fh = pysam.AlignmentFile(bam_path, 'rb', threads=20)
     # out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
-    readnames = open(f'{tmp_dir}/KeepReads.list', 'w')
+    readnames = open(f'{bam_path}.DedupReads', 'w')
    
     # from split table to contacts
     splits = ['1', '1-1', '1-3', '1-2', '2-2', '2-3', '2-1', '2']
@@ -242,8 +242,8 @@ def mark_duplicates(bam_path, output_path, tmp_dir=os.getcwd()):
             # out_fh.write(se)
     bam_fh.close()
 
-    filter_cmd = f'samtools view -N {tmp_dir}/KeepReads.list {bam_path} -b -h -o {output_path}'
-    run(filter_cmd, shell=True, check=True)
+    filter_cmd = f'samtools view -N {bam_path}.DedupReads {bam_path} -b -h -o {output_path}'
+    subprocess.run(filter_cmd, shell=True, check=True)
     # out_fh.close()
     return
 
