@@ -221,7 +221,7 @@ def mark_duplicates(bam_path, output_path, tmp_dir=os.getcwd()):
                         # out_fh.write(se)
                         
                 pre_id = _id
-                uniq_reads = line[0]
+                uniq_reads = [line[0]]
                 locs = ['' for _ in range(len(splits))]
             else:
                 uniq_reads.append(line[0])
