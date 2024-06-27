@@ -177,8 +177,8 @@ def _parse_split_table(input_path, output_path, chrom_size_path, min_gap=2500):
 
 def mark_duplicates(bam_path, output_path):
     bam_fh = pysam.AlignmentFile(bam_path, 'rb', threads=20)
-    out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
-    # readnames = open(f'{bam_path}.DedupReads', 'w')
+    # out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
+    readnames = open(f'{bam_path}.DedupReads', 'w')
    
     # from split table to contacts
     splits = ['1', '1-1', '1-3', '1-2', '2-2', '2-3', '2-1', '2']
@@ -218,16 +218,16 @@ def mark_duplicates(bam_path, output_path):
                 if loc_key not in uniq_locs:
                     uniq_locs[loc_key] = 1
                     for se in uniq_reads:
-                        # print(se, file=readnames)
-                        out_fh.write(se)
+                        print(se, file=readnames)
+                        # out_fh.write(se)
                         
                 pre_id = _id
-                # uniq_reads = [qname]
-                uniq_reads = [read]
+                uniq_reads = [qname]
+                # uniq_reads = [read]
                 locs = [''] * len(splits)
             else:
-                uniq_reads.append(read)
-                # uniq_reads.append(qname)
+                # uniq_reads.append(read)
+                uniq_reads.append(qname)
             locs[split_dict[split_st]] = f'{strand}:' \
                                             f'{read.reference_name}:' \
                                             f'{str(read.pos + 1)}:' \
@@ -236,14 +236,14 @@ def mark_duplicates(bam_path, output_path):
     if loc_key not in uniq_locs:
         uniq_locs[loc_key] = 1
         for se in uniq_reads:
-            # print(se, file=readnames)
-            out_fh.write(se)
+            print(se, file=readnames)
+            # out_fh.write(se)
     bam_fh.close()
-    # readnames.close()
+    readnames.close()
 
-    # filter_cmd = f'samtools view -@ 20 -N {bam_path}.DedupReads {bam_path} -b -h -o {output_path}'
-    # subprocess.run(filter_cmd, shell=True, check=True)
-    out_fh.close()
+    filter_cmd = f'samtools view -@ 20 -N {bam_path}.DedupReads {bam_path} -b -h -o {output_path}'
+    subprocess.run(filter_cmd, shell=True, check=True)
+    # out_fh.close()
     return
 
 
