@@ -184,31 +184,33 @@ def mark_duplicates(bam_path, output_path):
     splits = ['1', '1-1', '1-3', '1-2', '2-2', '2-3', '2-1', '2']
     split_dict = {x: i for i, x in enumerate(splits)}
     pre_id = ''
-    locs = ['' for _ in range(len(splits))]
+    locs = [''] * len(splits)
 
     uniq_locs = dict()
     uniq_reads = []
     for read in bam_fh:
-        line = str(read).split()
-        if '_' in line[0]:
-            _id = line[0].split('_')[0]
-            if line[0].startswith("SRR") and '/' in line[0]:
-                split_st = line[0].split('_')[1].split('/')[1][0]
+        # line = str(read).split()
+        qname = read.query_name
+        if '_' in qname:
+            _id = qname.split('_')[0]
+            if qname.startswith("SRR") and '/' in qname:
+                split_st = qname.split('_')[1].split('/')[1][0]
             else:
-                split_st = line[0].split('_')[1].split(':')[0]
-            if line[0][-2:] == '-l':
+                split_st = qname.split('_')[1].split(':')[0]
+            suffix = qname[-2:]
+            if suffix == '-l':
                 split_st += '-1'
-            elif line[0][-2:] == '-r':
+            elif suffix == '-r':
                 split_st += '-2'
-            elif line[0][-2:] == '-m':
+            elif suffix == '-m':
                 split_st += '-3'
             if read.flag & 16:
-                if split_st.split('-')[0] == '1':
+                if split_st.startswith('1'):
                     strand = 'GA+'
                 else:
                     strand = 'GA-'
             else:
-                if split_st.split('-')[0] == '1':
+                if split_st.startswith('1'):
                     strand = 'CT-'
                 else:
                     strand = 'CT+'
@@ -223,7 +225,7 @@ def mark_duplicates(bam_path, output_path):
                 pre_id = _id
                 # uniq_reads = [line[0]]
                 uniq_reads = [read]
-                locs = ['' for _ in range(len(splits))]
+                locs = [''] * len(splits)
             else:
                 # uniq_reads.append(read)
                 uniq_reads.append(line[0])
