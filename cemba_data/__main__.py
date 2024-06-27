@@ -186,6 +186,7 @@ def sbatch_register_subparser(subparser):
 
     parser_req.add_argument(
         "--memG",
+        "-memG",
         type=int,
         default='100',
         help="Memory of job in Gb."

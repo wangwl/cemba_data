@@ -2,6 +2,7 @@ import pysam
 import subprocess
 import pandas as pd
 import dnaio
+import os
 
 
 def split_fastq_reads(fastq_path, output_path, trim_b=0, size_l=40, size_r=40, size_m=30):
@@ -174,9 +175,10 @@ def _parse_split_table(input_path, output_path, chrom_size_path, min_gap=2500):
     return output_path
 
 
-def mark_duplicates(bam_path, output_path):
+def mark_duplicates(bam_path, output_path, tmp_dir=os.getcwd()):
     bam_fh = pysam.AlignmentFile(bam_path, 'rb', threads=20)
-    out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
+    # out_fh = pysam.AlignmentFile(output_path, 'wb', template=bam_fh)
+    readnames = open(f'{tmp_dir}/KeepReads.list', 'w')
    
     # from split table to contacts
     splits = ['1', '1-1', '1-3', '1-2', '2-2', '2-3', '2-1', '2']
@@ -215,13 +217,14 @@ def mark_duplicates(bam_path, output_path):
                 if loc_key not in uniq_locs:
                     uniq_locs[loc_key] = 1
                     for se in uniq_reads:
-                        out_fh.write(se)
+                        print(se, file=readnames)
+                        # out_fh.write(se)
                         
                 pre_id = _id
-                uniq_reads = [read]
+                uniq_reads = line[0]
                 locs = ['' for _ in range(len(splits))]
             else:
-                uniq_reads.append(read)
+                uniq_reads.append(line[0])
             # if strand == 1:
             locs[split_dict[split_st]] = f'{strand}:' \
                                             f'{bam_fh.get_reference_name(read.reference_id)}:' \
@@ -235,9 +238,13 @@ def mark_duplicates(bam_path, output_path):
     if loc_key not in uniq_locs:
         uniq_locs[loc_key] = 1
         for se in uniq_reads:
-            out_fh.write(se)
+            print(se, file=readnames)
+            # out_fh.write(se)
     bam_fh.close()
-    out_fh.close()
+
+    filter_cmd = f'samtools view -N {tmp_dir}/KeepReads.list {bam_path} -b -h -o {output_path}'
+    run(filter_cmd, shell=True, check=True)
+    # out_fh.close()
     return
 
 
