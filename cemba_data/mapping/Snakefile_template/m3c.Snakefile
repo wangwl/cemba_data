@@ -185,7 +185,7 @@ rule dedup_bam:
         mem_mb=1000
     shell:
         """
-         yap-internal mark-duplicates --bam_path {input} --output_path {output}
+         yap-internal mark-duplicates --bam_path {input} --output_path {output.bam}
         """
 
 
