@@ -188,6 +188,7 @@ def mark_duplicates(bam_path, output_path):
 
     uniq_locs = dict()
     uniq_reads = []
+    valide_pairs = 0
     for read in bam_fh:
         qname = read.query_name
         if '_' in qname:
@@ -217,6 +218,7 @@ def mark_duplicates(bam_path, output_path):
                 loc_key = '\t'.join(locs)
                 if loc_key not in uniq_locs:
                     uniq_locs[loc_key] = 1
+                    valide_pairs += 1
                     for se in uniq_reads:
                         print(se, file=readnames)
                         # out_fh.write(se)
@@ -235,6 +237,7 @@ def mark_duplicates(bam_path, output_path):
     loc_key = '\t'.join(locs)
     if loc_key not in uniq_locs:
         uniq_locs[loc_key] = 1
+        valide_pairs += 1
         for se in uniq_reads:
             print(se, file=readnames)
             # out_fh.write(se)
@@ -243,7 +246,9 @@ def mark_duplicates(bam_path, output_path):
 
     filter_cmd = f'samtools view -@ 20 -N {bam_path}.DedupReads {bam_path} -b -h -o {output_path}'
     subprocess.run(filter_cmd, shell=True, check=True)
-    # out_fh.close()
+    valid = open(f'{bam_path}.valid_pairs.tsv', 'w')
+    print(f'ValidPairs\t{valide_pairs}', file=valid)
+    valid.close()
     return
 
 
