@@ -70,7 +70,7 @@ def validate_mapping_config(output_dir):
     return
 
 
-def make_snakefile(output_dir,sky_template):
+def make_snakefile(output_dir,aligner,sky_template):
     output_dir = pathlib.Path(output_dir).absolute()
     config = get_configuration(output_dir / 'mapping_config.ini')
     try:
@@ -91,7 +91,7 @@ def make_snakefile(output_dir,sky_template):
     print('Making Snakefile based on mapping config INI file. The parameters are:')
     print(config_str)
 
-    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.Snakefile') as f:
+    with open(PACKAGE_DIR / f'mapping/Snakefile_template/{mode}.{aligner}.Snakefile') as f:
         snake_template = f.read()
 
     for sub_dir in output_dir.iterdir():
@@ -443,6 +443,6 @@ def start_from_cell_fastq(output_dir, fastq_pattern, config_path,sky_template=No
     if aligner=='hisat3n':
         make_snakefile_hisat3n(output_dir)
     else:
-        make_snakefile(output_dir,sky_template)
+        make_snakefile(output_dir,aligner,sky_template)
     prepare_run(output_dir)
     return

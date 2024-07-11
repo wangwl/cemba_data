@@ -358,7 +358,7 @@ def update_snakemake_register_subparser(subparser):
         "--aligner",
         type=str,
         required=True,
-        choices=['bismark', 'hisat3n'],
+        choices=['bt1', 'bt2', 'hisat3n'],
         help="Choice of aligner and corresponding mapping pipelines."
     )
 
@@ -485,7 +485,7 @@ def start_from_cell_fastq_register_subparser(subparser):
         "--aligner",
         type=str,
         required=True,
-        choices=['bismark', 'hisat3n'],
+        choices=['bt1', 'bt2', 'hisat3n'],
         help="Choice of aligner and corresponding mapping pipelines."
     )
 

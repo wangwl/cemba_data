@@ -467,8 +467,8 @@ def demultiplex_pipeline(fastq_pattern, output_dir, config_path, cpu, aligner,sk
         _reformat_v2_single(output_dir=output_dir)
     _skip_abnormal_fastq_pairs(output_dir=output_dir)
 
-    if aligner.lower() == 'bismark':
-        make_snakefile(output_dir=output_dir,sky_template=sky_template)
+    if aligner.lower() in ['bismark', 'bt1', 'bt2']:
+        make_snakefile(output_dir=output_dir,aligner=aligner,sky_template=sky_template)
 
         # this is just a convenient step, so I fix the parameters here
         # users should change the resulting batch submission
@@ -489,6 +489,6 @@ def update_snakemake(output_dir,sky_template, aligner):
     if aligner == 'hisat3n':
         make_snakefile_hisat3n(output_dir)
     else:
-        make_snakefile(output_dir,sky_template)
+        make_snakefile(output_dir,aligner,sky_template)
     prepare_run(output_dir)
     return
