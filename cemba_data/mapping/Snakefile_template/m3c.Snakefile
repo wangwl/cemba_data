@@ -36,6 +36,7 @@ else:
 
 fastq_dir=os.path.abspath("fastq")
 
+
 # the summary rule is the final target
 rule summary:
     input:
