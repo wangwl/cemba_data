@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='cemba-data',
-    use_scm_version=True,
+    version="1.2.0",
+    # use_scm_version=True,
     setup_requires=['setuptools_scm'],
     author='Hanqing Liu',
     author_email='hanliu@salk.edu',
