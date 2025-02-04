@@ -178,7 +178,6 @@ rule dedup_bam:
         local(bam_dir+"/{cell_id}.m3C.bam")
     output:
         bam=local(temp(bam_dir+"/{cell_id}.m3C.dedup.bam")),
-        Reads=local(temp(bam_dir+"/{cell_id}.m3C.bam.DedupReads")),
     params:
         tmp_dir=os.path.abspath("bam/temp") if not gcp else workflow.default_remote_prefix+"/bam/temp"
     resources:
